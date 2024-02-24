@@ -24,4 +24,7 @@ hs_err_pid*
 replay_pid*
 
 # Intelij
-.idea
+.idea/
+
+# Binaries
+target/
