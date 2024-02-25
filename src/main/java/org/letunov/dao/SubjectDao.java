@@ -2,6 +2,7 @@ package org.letunov.dao;
 
 import org.letunov.domainModel.Subject;
 import org.springframework.data.domain.Page;
+import org.springframework.stereotype.Repository;
 
 public interface SubjectDao
 {

@@ -3,6 +3,7 @@ package org.letunov.dao;
 import org.letunov.domainModel.EducationDay;
 import org.letunov.domainModel.Group;
 import org.letunov.domainModel.User;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 

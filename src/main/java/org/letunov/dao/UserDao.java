@@ -2,6 +2,7 @@ package org.letunov.dao;
 
 import org.letunov.domainModel.User;
 import org.springframework.data.domain.Page;
+import org.springframework.stereotype.Repository;
 
 public interface UserDao
 {

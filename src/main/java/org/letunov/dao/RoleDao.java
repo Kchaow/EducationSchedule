@@ -1,6 +1,7 @@
 package org.letunov.dao;
 
 import org.letunov.domainModel.Role;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 

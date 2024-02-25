@@ -2,6 +2,7 @@ package org.letunov.dao;
 
 import org.letunov.domainModel.Attendance;
 import org.letunov.domainModel.Subject;
+import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;
