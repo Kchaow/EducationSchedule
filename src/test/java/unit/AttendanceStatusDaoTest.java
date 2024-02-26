@@ -68,4 +68,14 @@ public class AttendanceStatusDaoTest
         );
     }
 
+    @Test
+    public void AttendanceStatusFindByNameTest()
+    {
+        AttendanceStatus attendanceStatus = attendanceStatusDao.findByName("присутствует");
+        assertAll(
+                () -> assertNotNull(attendanceStatus),
+                () -> assertEquals(1, attendanceStatus.getId()),
+                () -> assertEquals("присутствует", attendanceStatus.getName())
+        );
+    }
 }
