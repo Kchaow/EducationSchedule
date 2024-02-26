@@ -1,9 +1,9 @@
 package unit;
 
-import lombok.extern.java.Log;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.letunov.dao.AttendanceStatusDao;
 import org.letunov.dao.impl.AttendanceStatusDaoImpl;
 import org.letunov.domainModel.AttendanceStatus;
@@ -17,8 +17,10 @@ import org.testcontainers.utility.DockerImageName;
 import java.sql.Driver;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 @Testcontainers
-@Log
+@Slf4j
 public class AttendanceStatusDaoTest
 {
     private AttendanceStatusDao attendanceStatusDao;
@@ -49,9 +51,21 @@ public class AttendanceStatusDaoTest
     }
 
     @Test
-    public void findAllTest()
+    public void AttendanceStatusFindAllTest()
     {
         List<AttendanceStatus> attendanceStatusList = attendanceStatusDao.findAll();
         assertEquals(3, attendanceStatusList.size());
     }
+
+    @Test
+    public void AttendanceStatusFindByIdTest()
+    {
+        AttendanceStatus attendanceStatus = attendanceStatusDao.findById(1);
+        assertAll(
+                () -> assertNotNull(attendanceStatus),
+                () -> assertEquals(1, attendanceStatus.getId()),
+                () -> assertEquals("присутствует", attendanceStatus.getName())
+        );
+    }
+
 }

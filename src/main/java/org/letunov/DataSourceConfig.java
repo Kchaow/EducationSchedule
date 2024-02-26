@@ -2,33 +2,28 @@ package org.letunov;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import lombok.extern.java.Log;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.JdbcTransactionManager;
+import org.springframework.transaction.PlatformTransactionManager;
 
 import javax.sql.DataSource;
-import javax.xml.crypto.Data;
 
 @Configuration
 @PropertySource("classpath:database/datasource.properties")
-@Log
+@Slf4j
 public class DataSourceConfig
 {
-    @Value("${datasource.dataSourceClassName}")
-    private String dataSourceClassName;
     @Value("${datasource.user}")
     private String user;
     @Value("${datasource.password}")
     private String password;
-    @Value("${datasource.databaseName}")
-    private String databaseName;
-    @Value("${datasource.port}")
-    private String port;
-    @Value("${datasource.serverName}")
-    private String serverName;
+    @Value("${datasource.jdbcUrl}")
+    private String jdbcUr;
 
     @Bean(destroyMethod = "close")
     public DataSource dataSource()
@@ -36,24 +31,32 @@ public class DataSourceConfig
         try
         {
             HikariConfig config = new HikariConfig();
-            config.setDataSourceClassName(dataSourceClassName);
+            log.info("Configuration hikari pool with {} jdbcUrl", jdbcUr);
+            config.setJdbcUrl(jdbcUr);
+            log.info("Configuration hikari pool with {} username", user);
             config.setUsername(user);
+            log.info("Configuration hikari pool with {} password", password);
             config.setPassword(password);
-            config.addDataSourceProperty("databaseName", databaseName);
-            config.addDataSourceProperty("serverName", serverName);
-            config.addDataSourceProperty("port", port);
             return new HikariDataSource(config);
         }
         catch (Exception e)
         {
-            log.finest(e.getMessage());
+            log.error("Error hikari pool configuration: {}", e.getMessage());
             return null;
         }
     }
 
     @Bean
+    public PlatformTransactionManager platformTransactionManager(DataSource dataSource)
+    {
+        log.info("Configuration PlatformTransactionManager with dataSource");
+        return new JdbcTransactionManager(dataSource);
+    }
+
+    @Bean
     public JdbcTemplate jdbcTemplate(DataSource dataSource)
     {
+        log.info("Configuration JdbcTemplate");
         return new JdbcTemplate(dataSource);
     }
 }
