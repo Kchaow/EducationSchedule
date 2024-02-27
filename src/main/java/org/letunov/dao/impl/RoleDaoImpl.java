@@ -24,7 +24,7 @@ public class RoleDaoImpl implements RoleDao
     public List<Role> findAll()
     {
         final String query = "SELECT id, name FROM role";
-        RowMapper<Role> rowMapper = new RoleDaoImpl.RoleDaoRowMapper();
+        RowMapper<Role> rowMapper = new RoleDaoImpl.RoleRowMapper();
         return jdbcTemplate.query(query, rowMapper);
     }
 
@@ -36,7 +36,6 @@ public class RoleDaoImpl implements RoleDao
         Role role = new Role();
         if (rowSet.first())
         {
-            rowSet.first();
             role.setId(rowSet.getInt(1));
             role.setName(rowSet.getString(2));
             return role;
@@ -44,7 +43,7 @@ public class RoleDaoImpl implements RoleDao
         return null;
     }
 
-    private static class RoleDaoRowMapper implements RowMapper<Role>
+    private static class RoleRowMapper implements RowMapper<Role>
     {
         @Override
         public Role mapRow(ResultSet rs, int rowNum) throws SQLException

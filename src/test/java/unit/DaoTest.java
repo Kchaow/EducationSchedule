@@ -5,11 +5,17 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.letunov.dao.AttendanceStatusDao;
+import org.letunov.dao.GroupDao;
 import org.letunov.dao.RoleDao;
+import org.letunov.dao.UserDao;
 import org.letunov.dao.impl.AttendanceStatusDaoImpl;
+import org.letunov.dao.impl.GroupDaoImpl;
 import org.letunov.dao.impl.RoleDaoImpl;
+import org.letunov.dao.impl.UserDaoImpl;
 import org.letunov.domainModel.AttendanceStatus;
+import org.letunov.domainModel.Group;
 import org.letunov.domainModel.Role;
+import org.springframework.data.domain.Page;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 import org.testcontainers.containers.PostgreSQLContainer;
@@ -28,6 +34,8 @@ public class DaoTest
 {
     private AttendanceStatusDao attendanceStatusDao;
     private RoleDao roleDao;
+    private UserDao userDao;
+    private GroupDao groupDao;
     private final String databaseName = "schedule";
     private final String password = "postgres";
     private final String username = "postgres";
@@ -53,6 +61,8 @@ public class DaoTest
         JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
         attendanceStatusDao = new AttendanceStatusDaoImpl(jdbcTemplate);
         roleDao = new RoleDaoImpl(jdbcTemplate);
+        userDao = new UserDaoImpl(jdbcTemplate);
+        groupDao = new GroupDaoImpl(jdbcTemplate, userDao);
     }
 
     @Test
@@ -100,5 +110,45 @@ public class DaoTest
                 () -> assertEquals(1, role.getId()),
                 () -> assertEquals("admin", role.getName())
         );
+    }
+
+    @Test
+    public void GroupFindAllOrderByNameAscTest()
+    {
+        Page<Group> groupPage = groupDao.findAllOrderByNameAsc(10, 0);
+        assertAll(
+                () -> assertEquals(3, groupPage.getTotalElements()),
+                () -> assertEquals(2, groupPage.getContent().getFirst().getUser().size()),
+                () -> assertFalse(groupPage.getContent().getFirst().getUser().isEmpty())
+        );
+    }
+
+    @Test
+    public void GroupFindByIdTest()
+    {
+        Group group = groupDao.findById(1);
+        assertAll(
+                () -> assertNotNull(group),
+                () -> assertEquals(1, group.getId()),
+                () -> assertEquals("БСБО-01-21", group.getName())
+        );
+    }
+
+    @Test
+    public void GroupFindByNameTest()
+    {
+        Group group = groupDao.findByName("БСБО-01-21");
+        assertAll(
+                () -> assertNotNull(group),
+                () -> assertEquals(1, group.getId()),
+                () -> assertEquals("БСБО-01-21", group.getName())
+        );
+    }
+
+    @Test
+    public void GroupDeleteByIdTest()
+    {
+        groupDao.deleteById(1);
+        assertNull(groupDao.findById(1));
     }
 }

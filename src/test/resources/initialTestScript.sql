@@ -49,7 +49,7 @@ CREATE TABLE education_day
 CREATE TABLE education_day_group
 (
     id SERIAL PRIMARY KEY,
-    group_id INTEGER REFERENCES "group" (id) NOT NULL,
+    group_id INTEGER REFERENCES "group" (id) ON DELETE CASCADE NOT NULL,
     education_day_id INTEGER REFERENCES education_day (id) ON DELETE CASCADE NOT NULL
 );
 

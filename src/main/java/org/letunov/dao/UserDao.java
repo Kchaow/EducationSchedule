@@ -15,4 +15,5 @@ public interface UserDao
     User findByEmail(String email);
     void deleteById(long id);
     User save(User user);
+    Iterable<User> saveAll(Iterable<User> users);
 }
