@@ -5,8 +5,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.letunov.dao.AttendanceStatusDao;
+import org.letunov.dao.RoleDao;
 import org.letunov.dao.impl.AttendanceStatusDaoImpl;
+import org.letunov.dao.impl.RoleDaoImpl;
 import org.letunov.domainModel.AttendanceStatus;
+import org.letunov.domainModel.Role;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 import org.testcontainers.containers.PostgreSQLContainer;
@@ -21,9 +24,10 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @Testcontainers
 @Slf4j
-public class AttendanceStatusDaoTest
+public class DaoTest
 {
     private AttendanceStatusDao attendanceStatusDao;
+    private RoleDao roleDao;
     private final String databaseName = "schedule";
     private final String password = "postgres";
     private final String username = "postgres";
@@ -48,6 +52,7 @@ public class AttendanceStatusDaoTest
         dataSource.setPassword(postgres.getPassword());
         JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
         attendanceStatusDao = new AttendanceStatusDaoImpl(jdbcTemplate);
+        roleDao = new RoleDaoImpl(jdbcTemplate);
     }
 
     @Test
@@ -76,6 +81,24 @@ public class AttendanceStatusDaoTest
                 () -> assertNotNull(attendanceStatus),
                 () -> assertEquals(1, attendanceStatus.getId()),
                 () -> assertEquals("присутствует", attendanceStatus.getName())
+        );
+    }
+
+    @Test
+    public void RoleFindAllTest()
+    {
+        List<Role> roleList = roleDao.findAll();
+        assertEquals(3, roleList.size());
+    }
+
+    @Test
+    public void RoleFindByIdTest()
+    {
+        Role role = roleDao.findById(1);
+        assertAll(
+                () -> assertNotNull(role),
+                () -> assertEquals(1, role.getId()),
+                () -> assertEquals("admin", role.getName())
         );
     }
 }

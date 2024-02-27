@@ -7,5 +7,5 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public class Role extends AbstractEntity
 {
-    private String role;
+    private String name;
 }
