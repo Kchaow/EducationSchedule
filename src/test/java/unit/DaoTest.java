@@ -15,6 +15,8 @@ import org.letunov.dao.impl.UserDaoImpl;
 import org.letunov.domainModel.AttendanceStatus;
 import org.letunov.domainModel.Group;
 import org.letunov.domainModel.Role;
+import org.letunov.domainModel.User;
+import org.letunov.exceptions.TheDependentEntityIsPreservedBeforeTheIndependentEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
@@ -61,8 +63,8 @@ public class DaoTest
         JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
         attendanceStatusDao = new AttendanceStatusDaoImpl(jdbcTemplate);
         roleDao = new RoleDaoImpl(jdbcTemplate);
-        userDao = new UserDaoImpl(jdbcTemplate);
-        groupDao = new GroupDaoImpl(jdbcTemplate, userDao);
+        groupDao = new GroupDaoImpl(jdbcTemplate);
+        userDao = new UserDaoImpl(jdbcTemplate, groupDao, roleDao);
     }
 
     @Test
@@ -116,11 +118,7 @@ public class DaoTest
     public void GroupFindAllOrderByNameAscTest()
     {
         Page<Group> groupPage = groupDao.findAllOrderByNameAsc(10, 0);
-        assertAll(
-                () -> assertEquals(3, groupPage.getTotalElements()),
-                () -> assertEquals(2, groupPage.getContent().getFirst().getUser().size()),
-                () -> assertFalse(groupPage.getContent().getFirst().getUser().isEmpty())
-        );
+        assertEquals(3, groupPage.getTotalElements());
     }
 
     @Test
@@ -150,5 +148,126 @@ public class DaoTest
     {
         groupDao.deleteById(1);
         assertNull(groupDao.findById(1));
+    }
+
+    @Test
+    public void GroupSaveTest()
+    {
+        long id = 1;
+        Group group = groupDao.findById(id);
+        group.setName("old group");
+        groupDao.save(group);
+
+        Group newGroup = new Group();
+        newGroup.setName("new group");
+        groupDao.save(newGroup);
+
+        assertAll(
+                () -> assertEquals("old group", groupDao.findById(id).getName()),
+                () -> assertEquals("new group", groupDao.findById(4).getName())
+        );
+
+    }
+
+    @Test
+    public void UserFindByIdTest()
+    {
+        User user = userDao.findById(4);
+        assertAll(
+                () -> assertNotNull(user),
+                () -> assertEquals(4, user.getId()),
+                () -> assertEquals("Копылова", user.getFirstName())
+        );
+    }
+
+    @Test
+    public void UserSaveTest()
+    {
+        long id = 4;
+        User oldUser = userDao.findById(id);
+        oldUser.setFirstName("Lora");
+        userDao.save(oldUser);
+
+        User newUser = new User();
+        newUser.setFirstName("Ryan");
+        newUser.setLastName("Gosling");
+        newUser.setLogin("gos");
+        newUser.setPassword("1234");
+        Role role = roleDao.findAll().getFirst();
+        newUser.setRole(role);
+        Group newGroup = new Group();
+        newGroup.setName("new group");
+        newUser.setGroup(newGroup);
+
+        User newUser2 = new User();
+        newUser2.setFirstName("Ryan");
+        newUser2.setLastName("Gosling");
+        newUser2.setLogin("gos");
+        newUser2.setEmail("mail");
+        newUser2.setPassword("1234");
+        role = roleDao.findAll().get(1);
+        newUser2.setRole(role);
+        newGroup = groupDao.findById(2);
+        newGroup.setName("new group");
+        newUser2.setGroup(newGroup);
+
+        assertAll(
+                () -> assertEquals("Lora", userDao.findById(id).getFirstName()),
+                () -> assertThrows(TheDependentEntityIsPreservedBeforeTheIndependentEntity.class, () -> userDao.save(newUser)),
+                () -> assertEquals("Ryan", userDao.save(newUser2).getFirstName())
+        );
+    }
+
+    @Test
+    public void UserFindByFirstNameOrderByFirstName()
+    {
+        assertEquals(1, userDao.findByFirstNameOrderByFirstName("Тихонова", 10, 0).getContent().getFirst().getId());
+    }
+
+    @Test
+    public void UserFindByLastNameOrderByLastName()
+    {
+        assertEquals(3, userDao.findByLastNameOrderByLastName("Лука", 10, 0).getContent().getFirst().getId());
+    }
+
+    @Test
+    public void UserFindByMiddleNameOrderByMiddleName()
+    {
+        assertEquals(6, userDao.findByMiddleNameOrderByMiddleName("Игоревна", 10, 0).getContent().getFirst().getId());
+    }
+
+    @Test
+    public void UserFindByLoginTest()
+    {
+        User user = userDao.findByLogin("kol_var");
+        assertAll(
+                () -> assertNotNull(user),
+                () -> assertEquals(6, user.getId()),
+                () -> assertEquals("kol_var", user.getLogin())
+        );
+    }
+
+    @Test
+    public void UserFindByEmailTest()
+    {
+        User user = userDao.findByEmail("kol_var@gmail.com");
+        assertAll(
+                () -> assertNotNull(user),
+                () -> assertEquals(6, user.getId()),
+                () -> assertEquals("kol_var@gmail.com", user.getEmail())
+        );
+    }
+
+    @Test
+    public void UserDeleteByIdTest()
+    {
+        userDao.deleteById(6);
+        assertNull(groupDao.findById(6));
+    }
+
+    @Test
+    public void UserFindByRole()
+    {
+        assertEquals(6, userDao.findByRole("student", 10, 0).getContent().size());
     }
 }
