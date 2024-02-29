@@ -8,7 +8,6 @@ import org.letunov.dao.*;
 import org.letunov.dao.impl.*;
 import org.letunov.domainModel.*;
 import org.letunov.exceptions.TheDependentEntityIsPreservedBeforeTheIndependentEntity;
-import org.springframework.cglib.core.Local;
 import org.springframework.data.domain.Page;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
@@ -35,6 +34,7 @@ public class DaoTest
     private GroupDao groupDao;
     private SubjectDao subjectDao;
     private EducationDayDao educationDayDao;
+    private AttendanceDao attendanceDao;
     private final String databaseName = "schedule";
     private final String password = "postgres";
     private final String username = "postgres";
@@ -63,6 +63,7 @@ public class DaoTest
         userDao = new UserDaoImpl(jdbcTemplate, groupDao, roleDao);
         subjectDao = new SubjectDaoImpl(jdbcTemplate);
         educationDayDao = new EducationDayDaoImpl(jdbcTemplate, userDao, subjectDao, groupDao);
+        attendanceDao = new AttendanceDaoImpl(jdbcTemplate, educationDayDao, userDao, attendanceStatusDao);
     }
 
     @Test
@@ -409,6 +410,60 @@ public class DaoTest
                 () -> assertEquals(7, educationDayDao.findByWeekNumberOrderByDateAscClassNumberAsc(1).size()),
                 () -> assertEquals(1, educationDayDao.findById(id).getGroup().size())
         );
+    }
 
+    @Test
+    public void AttendanceFindByStudentIdAndEducationDayId()
+    {
+        assertEquals(1, attendanceDao.findByStudentIdAndEducationDayId(4, 2).size());
+    }
+
+    @Test
+    public void AttendanceFindByEducationDayDateAndEducationDaySubject()
+    {
+        LocalDate localDate = LocalDate.of(2024, 2, 19);
+        Subject subject = subjectDao.findById(1);
+        Attendance attendance = attendanceDao.findByEducationDayDateAndEducationDaySubject(localDate, subject);
+        assertAll(
+                () -> assertNotNull(attendance),
+                () -> assertEquals(2, attendance.getEducationDay().getGroup().size())
+        );
+    }
+
+    @Test
+    public void AttendanceFindById()
+    {
+        Attendance attendance = attendanceDao.findById(1);
+        assertNotNull(attendance);
+    }
+
+    @Test
+    public void AttendanceDeleteById()
+    {
+        attendanceDao.deleteById(1);
+        assertNull(attendanceDao.findById(1));
+    }
+
+    @Test
+    public void AttendanceSave()
+    {
+        attendanceDao.deleteById(1);
+        long userId = 4;
+        User user = userDao.findById(userId);
+        AttendanceStatus attendanceStatus = attendanceStatusDao.findById(1);
+        EducationDay educationDay = educationDayDao.findById(1);
+        Attendance attendance = new Attendance();
+        attendance.setAttendanceStatus(attendanceStatus);
+        attendance.setUser(user);
+        attendance.setEducationDay(educationDay);
+
+        AttendanceStatus attendanceStatus1 = attendanceStatusDao.findById(3);
+        Attendance oldAttendance = attendanceDao.findById(2);
+        oldAttendance.setAttendanceStatus(attendanceStatus1);
+
+        assertAll(
+                () -> assertEquals(4, attendanceDao.save(attendance).getUser().getId()),
+                () -> assertEquals(3, attendanceDao.save(oldAttendance).getAttendanceStatus().getId())
+        );
     }
 }
