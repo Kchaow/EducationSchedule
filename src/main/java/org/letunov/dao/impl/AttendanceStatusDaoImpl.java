@@ -51,6 +51,8 @@ public class AttendanceStatusDaoImpl implements AttendanceStatusDao
     @Override
     public AttendanceStatus findByName(String name)
     {
+        if (name == null)
+            throw new NullPointerException("name arg cannot be null");
         final String query = "SELECT id, name FROM attendance_status WHERE name = ?";
         SqlRowSet rowSet = jdbcTemplate.queryForRowSet(query, name);
         AttendanceStatus attendanceStatus = new AttendanceStatus();

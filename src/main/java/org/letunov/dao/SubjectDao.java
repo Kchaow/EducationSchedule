@@ -7,7 +7,8 @@ import org.springframework.stereotype.Repository;
 public interface SubjectDao
 {
     Subject findById(long id);
-    Page<Subject> findAll();
+    Page<Subject> findAll(int limit, int offset);
+    Subject findByName(String name);
     Subject save(Subject subject);
     void deleteById(long id);
 }

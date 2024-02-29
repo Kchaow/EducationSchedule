@@ -5,6 +5,7 @@ import lombok.EqualsAndHashCode;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -13,7 +14,7 @@ public class EducationDay extends AbstractEntity
 {
     private int weekNumber;
     private User user;
-    private Set<Group> group;
+    private List<Group> group;
     private DayOfWeek dayOfWeek;
     private Subject subject;
     private LocalDate date;

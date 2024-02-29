@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface AttendanceDao
 {
-    List<Attendance> findByStudentIdAndEducationDayId(long user_id, long education_day_id);
+    List<Attendance> findByStudentIdAndEducationDayId(long userId, long educationDayId);
     List<Attendance> findByEducationDayDateAndEducationDaySubject(LocalDate date, Subject subject);
     Attendance findById(long id);
     void deleteById(long id);

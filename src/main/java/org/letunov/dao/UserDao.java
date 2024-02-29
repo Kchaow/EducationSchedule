@@ -3,6 +3,8 @@ package org.letunov.dao;
 import org.letunov.domainModel.User;
 import org.springframework.data.domain.Page;
 
+import java.util.List;
+
 public interface UserDao
 {
     User findById(long id);
@@ -14,5 +16,5 @@ public interface UserDao
     User findByEmail(String email);
     void deleteById(long id);
     User save(User user);
-    Iterable<User> saveAll(Iterable<User> users);
+    List<User> saveAll(List<User> users);
 }

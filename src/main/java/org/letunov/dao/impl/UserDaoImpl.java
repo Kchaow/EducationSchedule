@@ -1,5 +1,7 @@
 package org.letunov.dao.impl;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.letunov.dao.GroupDao;
 import org.letunov.dao.RoleDao;
 import org.letunov.dao.UserDao;
@@ -54,6 +56,8 @@ public class UserDaoImpl implements UserDao
     @Override
     public Page<User> findByRole(String role, int limit, int offset)
     {
+        if (role == null)
+            throw new NullPointerException("role arg cannot be null");
         final String query = """
                 SELECT u.id user_id, u.first_name, u.last_name, u.email, u.middle_name, u.password, u.login, u.role_id, u.group_id, r.name role_name, gr.name group_name
                 FROM "user" u
@@ -74,6 +78,8 @@ public class UserDaoImpl implements UserDao
     @Override
     public Page<User> findByFirstNameOrderByFirstName(String firstName,int limit,int offset)
     {
+        if (firstName == null)
+            throw new NullPointerException("firstName arg cannot be null");
         final String query = """
                 SELECT u.id user_id, u.first_name, u.last_name, u.email, u.middle_name, u.password, u.login, u.role_id, u.group_id, r.name role_name, gr.name group_name
                 FROM "user" u
@@ -95,6 +101,8 @@ public class UserDaoImpl implements UserDao
     @Override
     public Page<User> findByLastNameOrderByLastName(String lastName, int limit, int offset)
     {
+        if (lastName == null)
+            throw new NullPointerException("lastName arg cannot be null");
         final String query = """
                 SELECT u.id user_id, u.first_name, u.last_name, u.email, u.middle_name, u.password, u.login, u.role_id, u.group_id, r.name role_name, gr.name group_name
                 FROM "user" u
@@ -116,6 +124,8 @@ public class UserDaoImpl implements UserDao
     @Override
     public Page<User> findByMiddleNameOrderByMiddleName(String middleName, int limit, int offset)
     {
+        if (middleName == null)
+            throw new NullPointerException("middleName arg cannot be null");
         final String query = """
                 SELECT u.id user_id, u.first_name, u.last_name, u.email, u.middle_name, u.password, u.login, u.role_id, u.group_id, r.name role_name, gr.name group_name
                 FROM "user" u
@@ -137,6 +147,8 @@ public class UserDaoImpl implements UserDao
     @Override
     public User findByLogin(String login)
     {
+        if (login == null)
+            throw new NullPointerException("login arg cannot be null");
         final String query = """
                 SELECT u.id user_id, u.first_name, u.last_name, u.email, u.middle_name, u.password, u.login, u.role_id, u.group_id, r.name role_name, gr.name group_name
                 FROM "user" u
@@ -156,6 +168,8 @@ public class UserDaoImpl implements UserDao
     @Override
     public User findByEmail(String email)
     {
+        if (email == null)
+            throw new NullPointerException("email arg cannot be null");
         final String query = """
                 SELECT u.id user_id, u.first_name, u.last_name, u.email, u.middle_name, u.password, u.login, u.role_id, u.group_id, r.name role_name, gr.name group_name
                 FROM "user" u
@@ -182,11 +196,24 @@ public class UserDaoImpl implements UserDao
     @Override
     public User save(User user)
     {
+        if (user == null)
+            throw new NullPointerException("user arg cannot be null");
+        else if (user.getFirstName() == null)
+            throw new NullPointerException("user firstName cannot be null");
+        else if (user.getLastName() == null)
+            throw new NullPointerException("user lastName cannot be null");
+        else if (user.getEmail() == null)
+            throw new NullPointerException("user email cannot be null");
+        else if (user.getLogin() == null)
+            throw new NullPointerException("user login cannot be null");
+        else if (user.getPassword() == null)
+            throw new NullPointerException("user password cannot be null");
+        else if (user.getRole() == null)
+            throw new NullPointerException("user role cannot be null");
         if (user.getGroup() != null && groupDao.findById(user.getGroup().getId()) == null)
             throw new TheDependentEntityIsPreservedBeforeTheIndependentEntity("Trying to save a dependent user entity before an independent group entity");
         if (user.getRole() != null && roleDao.findById(user.getRole().getId()) == null)
             throw new TheDependentEntityIsPreservedBeforeTheIndependentEntity("Trying to save a dependent user entity before an independent group entity");
-
         if (user.getId() != 0 && findById(user.getId()) != null)
         {
             final String query = """
@@ -206,37 +233,100 @@ public class UserDaoImpl implements UserDao
                 VALUES(?,?,?,?,?,?,?,?);
                 """;
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        PreparedStatementCreator preparedStatementCreator = new PreparedStatementCreator()
-        {
-            @Override
-            public PreparedStatement createPreparedStatement(Connection con) throws SQLException
-            {
-                PreparedStatement preparedStatement = con.prepareStatement(query, new String[] {"id"});
-                preparedStatement.setString(1, user.getFirstName());
-                preparedStatement.setString(2, user.getLastName());
-                if (user.getMiddleName() != null)
-                    preparedStatement.setString(3, user.getMiddleName());
-                else
-                    preparedStatement.setNull(3, Types.NULL);
-                preparedStatement.setString(4, user.getEmail());
-                preparedStatement.setString(5, user.getLogin());
-                preparedStatement.setString(6, user.getPassword());
-                if (user.getGroup() != null)
-                    preparedStatement.setLong(7, user.getGroup().getId());
-                else
-                    preparedStatement.setNull(7, Types.NULL);
-                preparedStatement.setLong(8, user.getRole().getId());
-                return preparedStatement;
-            }
-        };
-        jdbcTemplate.update(preparedStatementCreator, keyHolder);
+        PreparedStatementSaveCreator preparedStatementSaveCreator = new PreparedStatementSaveCreator();
+        preparedStatementSaveCreator.setUser(user);
+        preparedStatementSaveCreator.setQuery(query);
+        jdbcTemplate.update(preparedStatementSaveCreator, keyHolder);
         return findById(Objects.requireNonNull(keyHolder.getKey()).longValue());
     }
 
     @Override
-    public Iterable<User> saveAll(Iterable<User> users) {
-        return null;
+    public List<User> saveAll(List<User> users)
+    {
+        if (users == null)
+            throw new NullPointerException("users arg cannot be null");
+        List<User> userResult = new ArrayList<>();
+        for (int i = 0; i < users.size(); i++)
+        {
+            if (users.get(i) == null)
+                throw new NullPointerException("user[%d] arg cannot be null".formatted(i));
+            else if (users.get(i).getFirstName() == null)
+                throw new NullPointerException("user[%d] firstName cannot be null".formatted(i));
+            else if (users.get(i).getLastName() == null)
+                throw new NullPointerException("user[%d] lastName cannot be null".formatted(i));
+            else if (users.get(i).getEmail() == null)
+                throw new NullPointerException("user[%d] email cannot be null".formatted(i));
+            else if (users.get(i).getLogin() == null)
+                throw new NullPointerException("user[%d] login cannot be null".formatted(i));
+            else if (users.get(i).getPassword() == null)
+                throw new NullPointerException("user[%d] password cannot be null".formatted(i));
+            else if (users.get(i).getRole() == null)
+                throw new NullPointerException("user[%d] role cannot be null".formatted(i));
+
+            if (users.get(i).getGroup() != null && groupDao.findById(users.get(i).getGroup().getId()) == null)
+                throw new TheDependentEntityIsPreservedBeforeTheIndependentEntity("Trying to save a dependent user entity before an independent group entity");
+            if (users.get(i).getRole() != null && roleDao.findById(users.get(i).getRole().getId()) == null)
+                throw new TheDependentEntityIsPreservedBeforeTheIndependentEntity("Trying to save a dependent user entity before an independent group entity");
+
+            if (users.get(i).getId() != 0 && findById(users.get(i).getId()) != null)
+            {
+                final String query = """
+                    UPDATE "user" SET first_name = ?, last_name = ?, middle_name = ?, email = ?,
+                                      login = ?, password = ?, group_id = ?, role_id = ? WHERE id = ?;
+                    """;
+                if (users.get(i).getGroup() == null)
+                    jdbcTemplate.update(query, users.get(i).getFirstName(), users.get(i).getLastName(), users.get(i).getMiddleName(), users.get(i).getEmail(),
+                            users.get(i).getLogin(), users.get(i).getPassword(), null, users.get(i).getRole().getId(), users.get(i).getId());
+                else
+                    jdbcTemplate.update(query, users.get(i).getFirstName(), users.get(i).getLastName(), users.get(i).getMiddleName(), users.get(i).getEmail(),
+                            users.get(i).getLogin(), users.get(i).getPassword(), users.get(i).getGroup().getId(), users.get(i).getRole().getId(), users.get(i).getId());
+                userResult.add(findById(users.get(i).getId()));
+            }
+            else
+            {
+                final String query = """
+                INSERT INTO "user"(first_name, last_name, middle_name, email, login, password, group_id, role_id)
+                VALUES(?,?,?,?,?,?,?,?);
+                """;
+                KeyHolder keyHolder = new GeneratedKeyHolder();
+                PreparedStatementSaveCreator preparedStatementSaveCreator = new PreparedStatementSaveCreator();
+                preparedStatementSaveCreator.setUser(users.get(i));
+                preparedStatementSaveCreator.setQuery(query);
+                jdbcTemplate.update(preparedStatementSaveCreator, keyHolder);
+                userResult.add(findById(Objects.requireNonNull(keyHolder.getKey()).longValue()));
+            }
+        }
+        return userResult;
     }
+
+    @Setter
+    @Getter
+    private static class PreparedStatementSaveCreator implements PreparedStatementCreator
+    {
+        private User user;
+        private String query;
+        @Override
+        public PreparedStatement createPreparedStatement(Connection con) throws SQLException
+        {
+            PreparedStatement preparedStatement = con.prepareStatement(query, new String[] {"id"});
+            preparedStatement.setString(1, user.getFirstName());
+            preparedStatement.setString(2, user.getLastName());
+            if (user.getMiddleName() != null)
+                preparedStatement.setString(3, user.getMiddleName());
+            else
+                preparedStatement.setNull(3, Types.NULL);
+            preparedStatement.setString(4, user.getEmail());
+            preparedStatement.setString(5, user.getLogin());
+            preparedStatement.setString(6, user.getPassword());
+            if (user.getGroup() != null)
+                preparedStatement.setLong(7, user.getGroup().getId());
+            else
+                preparedStatement.setNull(7, Types.NULL);
+            preparedStatement.setLong(8, user.getRole().getId());
+            return preparedStatement;
+        }
+    }
+
 
     private static class UserRowMapper implements RowMapper<User>
     {

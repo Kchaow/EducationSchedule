@@ -46,6 +46,8 @@ public class GroupDaoImpl implements GroupDao
     @Override
     public Group findByName(String name)
     {
+        if (name == null)
+            throw new NullPointerException("name arg cannot be null");
         final String query = "SELECT id, name FROM \"group\" WHERE name = ?";
         try
         {
@@ -68,6 +70,10 @@ public class GroupDaoImpl implements GroupDao
     @Override
     public Group save(Group group)
     {
+        if (group == null)
+            throw new NullPointerException("group cannot be null");
+        else if (group.getName() == null)
+            throw new NullPointerException("group name cannot be null");
         if (group.getId() != 0 && findById(group.getId()) != null)
         {
             final String query = """
