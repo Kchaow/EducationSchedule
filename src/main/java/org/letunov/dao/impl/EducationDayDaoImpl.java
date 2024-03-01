@@ -19,6 +19,9 @@ import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.*;
 import java.sql.Date;
@@ -26,6 +29,8 @@ import java.time.DayOfWeek;
 import java.time.ZoneId;
 import java.util.*;
 
+@Repository
+@Transactional
 public class EducationDayDaoImpl implements EducationDayDao
 {
     final private JdbcTemplate jdbcTemplate;
@@ -41,6 +46,7 @@ public class EducationDayDaoImpl implements EducationDayDao
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<EducationDay> findByWeekNumberOrderByDateAscClassNumberAsc(int weekNumber)
     {
         final String query = """
@@ -58,6 +64,7 @@ public class EducationDayDaoImpl implements EducationDayDao
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<EducationDay> findByWeekNumberAndTeacherOrderByDateAscClassNumberAsc(int weekNumber, User user)
     {
         if (user == null)
@@ -78,6 +85,7 @@ public class EducationDayDaoImpl implements EducationDayDao
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<EducationDay> findByWeekNumberAndGroupOrderByDateAscClassNumberAsc(int weekNumber, Group group)
     {
         if (group == null)
@@ -98,6 +106,7 @@ public class EducationDayDaoImpl implements EducationDayDao
     }
 
     @Override
+    @Transactional(readOnly = true)
     public EducationDay findById(long id)
     {
         final String query = """
@@ -117,6 +126,7 @@ public class EducationDayDaoImpl implements EducationDayDao
     }
 
     @Override
+    @Transactional
     public void deleteById(long id)
     {
         final String query = "DELETE FROM education_day WHERE id = ?";
@@ -125,6 +135,7 @@ public class EducationDayDaoImpl implements EducationDayDao
     }
 
     @Override
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
     public EducationDay save(EducationDay educationDay)
     {
         if (educationDay == null)

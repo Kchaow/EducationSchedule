@@ -10,10 +10,15 @@ import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.*;
 import java.util.*;
 
+@Repository
+@Transactional
 public class GroupDaoImpl implements GroupDao
 {
     private final JdbcTemplate jdbcTemplate;
@@ -30,6 +35,7 @@ public class GroupDaoImpl implements GroupDao
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Group findById(long id)
     {
         final String query = "SELECT id, name FROM \"group\" WHERE id = ?";
@@ -44,6 +50,7 @@ public class GroupDaoImpl implements GroupDao
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Group findByName(String name)
     {
         if (name == null)
@@ -60,14 +67,15 @@ public class GroupDaoImpl implements GroupDao
     }
 
     @Override
+    @Transactional
     public void deleteById(long id)
     {
         final String query = "DELETE FROM \"group\" WHERE id = ?";
         jdbcTemplate.update(query, id);
     }
 
-    //Transaction
     @Override
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
     public Group save(Group group)
     {
         if (group == null)

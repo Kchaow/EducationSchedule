@@ -13,6 +13,8 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -21,6 +23,7 @@ import java.sql.SQLException;
 import java.util.Objects;
 
 @Repository
+@Transactional
 public class SubjectDaoImpl implements SubjectDao
 {
     private final JdbcTemplate jdbcTemplate;
@@ -30,6 +33,7 @@ public class SubjectDaoImpl implements SubjectDao
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Subject findById(long id)
     {
         final String query = "SELECT id, name FROM subject WHERE id = ?;";
@@ -43,6 +47,7 @@ public class SubjectDaoImpl implements SubjectDao
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<Subject> findAll(int limit, int offset)
     {
         final String query = "SELECT id, name FROM subject LIMIT ? OFFSET ?";
@@ -50,6 +55,7 @@ public class SubjectDaoImpl implements SubjectDao
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Subject findByName(String name)
     {
         if (name == null)
@@ -66,6 +72,7 @@ public class SubjectDaoImpl implements SubjectDao
     }
 
     @Override
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
     public Subject save(Subject subject)
     {
         if (subject == null)
@@ -88,6 +95,7 @@ public class SubjectDaoImpl implements SubjectDao
     }
 
     @Override
+    @Transactional
     public void deleteById(long id)
     {
         final String query = "DELETE FROM subject WHERE id = ?";

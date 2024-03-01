@@ -13,12 +13,17 @@ import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
+@Repository
+@Transactional
 public class AttendanceDaoImpl implements AttendanceDao
 {
     private final JdbcTemplate jdbcTemplate;
@@ -33,6 +38,7 @@ public class AttendanceDaoImpl implements AttendanceDao
         this.userDao = userDao;
     }
     @Override
+    @Transactional(readOnly = true)
     public List<Attendance> findByStudentIdAndEducationDayId(long userId, long educationDayId)
     {
         final String query = "SELECT id, attendance_status_id, user_id, education_day_id FROM attendance WHERE user_id = ? AND education_day_id = ?";
@@ -42,6 +48,7 @@ public class AttendanceDaoImpl implements AttendanceDao
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Attendance findByEducationDayDateAndEducationDaySubject(LocalDate date, Subject subject)
     {
         if (date == null)
@@ -62,6 +69,7 @@ public class AttendanceDaoImpl implements AttendanceDao
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Attendance findById(long id)
     {
         final String query = "SELECT id, attendance_status_id, user_id, education_day_id FROM attendance WHERE id = ?";
@@ -73,6 +81,7 @@ public class AttendanceDaoImpl implements AttendanceDao
     }
 
     @Override
+    @Transactional
     public void deleteById(long id)
     {
         final String query = "DELETE FROM attendance WHERE id = ?";
@@ -80,6 +89,7 @@ public class AttendanceDaoImpl implements AttendanceDao
     }
 
     @Override
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
     public Attendance save(Attendance attendance)
     {
         if (attendance == null)

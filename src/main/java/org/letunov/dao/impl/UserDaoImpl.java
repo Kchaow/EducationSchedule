@@ -17,10 +17,15 @@ import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.*;
 import java.util.*;
 
+@Repository
+@Transactional
 public class UserDaoImpl implements UserDao
 {
     private final JdbcTemplate jdbcTemplate;
@@ -35,6 +40,7 @@ public class UserDaoImpl implements UserDao
     }
 
     @Override
+    @Transactional(readOnly = true)
     public User findById(long id)
     {
         final String query = """
@@ -54,6 +60,7 @@ public class UserDaoImpl implements UserDao
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<User> findByRole(String role, int limit, int offset)
     {
         if (role == null)
@@ -76,6 +83,7 @@ public class UserDaoImpl implements UserDao
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<User> findByFirstNameOrderByFirstName(String firstName,int limit,int offset)
     {
         if (firstName == null)
@@ -99,6 +107,7 @@ public class UserDaoImpl implements UserDao
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<User> findByLastNameOrderByLastName(String lastName, int limit, int offset)
     {
         if (lastName == null)
@@ -122,6 +131,7 @@ public class UserDaoImpl implements UserDao
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<User> findByMiddleNameOrderByMiddleName(String middleName, int limit, int offset)
     {
         if (middleName == null)
@@ -145,6 +155,7 @@ public class UserDaoImpl implements UserDao
     }
 
     @Override
+    @Transactional(readOnly = true)
     public User findByLogin(String login)
     {
         if (login == null)
@@ -166,6 +177,7 @@ public class UserDaoImpl implements UserDao
     }
 
     @Override
+    @Transactional(readOnly = true)
     public User findByEmail(String email)
     {
         if (email == null)
@@ -187,6 +199,7 @@ public class UserDaoImpl implements UserDao
     }
 
     @Override
+    @Transactional
     public void deleteById(long id)
     {
         final String query = "DELETE FROM \"user\" WHERE id = ?";
@@ -194,6 +207,7 @@ public class UserDaoImpl implements UserDao
     }
 
     @Override
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
     public User save(User user)
     {
         if (user == null)
@@ -241,6 +255,7 @@ public class UserDaoImpl implements UserDao
     }
 
     @Override
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
     public List<User> saveAll(List<User> users)
     {
         if (users == null)

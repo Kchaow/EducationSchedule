@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.sql.RowSet;
 import java.sql.Array;
@@ -15,6 +16,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @Repository
+@Transactional
 public class AttendanceStatusDaoImpl implements AttendanceStatusDao
 {
     private final JdbcTemplate jdbcTemplate;
@@ -25,6 +27,7 @@ public class AttendanceStatusDaoImpl implements AttendanceStatusDao
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<AttendanceStatus> findAll()
     {
         final String query = "SELECT id, name FROM attendance_status";
@@ -33,6 +36,7 @@ public class AttendanceStatusDaoImpl implements AttendanceStatusDao
     }
 
     @Override
+    @Transactional(readOnly = true)
     public AttendanceStatus findById(long id)
     {
         final String query = "SELECT id, name FROM attendance_status WHERE id = ?";
@@ -49,6 +53,7 @@ public class AttendanceStatusDaoImpl implements AttendanceStatusDao
     }
 
     @Override
+    @Transactional(readOnly = true)
     public AttendanceStatus findByName(String name)
     {
         if (name == null)

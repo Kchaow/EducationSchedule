@@ -6,11 +6,15 @@ import org.letunov.domainModel.Role;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+@Repository
+@Transactional
 public class RoleDaoImpl implements RoleDao
 {
     private final JdbcTemplate jdbcTemplate;
@@ -21,6 +25,7 @@ public class RoleDaoImpl implements RoleDao
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Role> findAll()
     {
         final String query = "SELECT id, name FROM role";
@@ -29,6 +34,7 @@ public class RoleDaoImpl implements RoleDao
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Role findById(long id)
     {
         final String query = "SELECT id, name FROM role WHERE id = ?";
