@@ -15,7 +15,6 @@ public class EducationDay extends AbstractEntity
     private int weekNumber;
     private User user;
     private List<Group> group;
-    private DayOfWeek dayOfWeek;
     private Subject subject;
     private LocalDate date;
     private int classNumber;

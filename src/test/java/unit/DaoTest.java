@@ -393,7 +393,6 @@ public class DaoTest
         educationDay.setClassNumber(3);
         educationDay.setDate(LocalDate.now());
         educationDay.setAudience(256);
-        educationDay.setDayOfWeek(DayOfWeek.FRIDAY);
         educationDay.setUser(user);
         educationDay.setSubject(subject);
         educationDay.setGroup(groupList);

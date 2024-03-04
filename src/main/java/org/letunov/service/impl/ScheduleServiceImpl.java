@@ -5,12 +5,16 @@ import org.letunov.dao.GroupDao;
 import org.letunov.dao.UserDao;
 import org.letunov.domainModel.EducationDay;
 import org.letunov.domainModel.Group;
+import org.letunov.domainModel.Subject;
 import org.letunov.domainModel.User;
 import org.letunov.service.ScheduleService;
 import org.letunov.service.dto.EducationDayDto;
 import org.letunov.service.dto.ScheduleDto;
+import org.letunov.service.dto.SubjectDto;
 import org.letunov.service.dto.UserNamesDto;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -59,24 +63,60 @@ public class ScheduleServiceImpl implements ScheduleService
                         .middleName(user.getMiddleName())
                         .build();
             }
+            SubjectDto subjectDto = SubjectDto.builder()
+                    .id(educationDay.getSubject().getId())
+                    .name(educationDay.getSubject().getName())
+                    .build();
             List<Long> groupsId = new ArrayList<>();
             educationDay.getGroup().forEach((x) -> groupsId.add(x.getId()));
             EducationDayDto educationDayDto = EducationDayDto.builder()
+                    .id(educationDay.getId())
                     .userNamesDto(userNamesDto)
                     .groupsId(groupsId)
                     .date(educationDay.getDate())
                     .classNumber(educationDay.getClassNumber())
                     .audience(educationDay.getAudience())
                     .weekNumber(educationDay.getWeekNumber())
+                    .subject(subjectDto)
                     .build();
             scheduleDto.getClasses().add(educationDayDto);
         }
         return ResponseEntity.ok(scheduleDto);
     }
 
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
     @Override
     public ResponseEntity<String> updateSchedule(ScheduleDto scheduleDto)
     {
-        return null;
+        if (scheduleDto == null)
+            throw new NullPointerException("scheduleDto arg cannot be null");
+        List<EducationDayDto> educationDayDtos = scheduleDto.getClasses();
+        for (EducationDayDto educationDayDto : educationDayDtos)
+        {
+            EducationDay educationDay = new EducationDay();
+            educationDay.setId(educationDayDto.getId());
+            educationDay.setDate(educationDayDto.getDate());
+            Subject subject = new Subject();
+            subject.setId(educationDayDto.getSubject().getId());
+            subject.setName(educationDayDto.getSubject().getName());
+            educationDay.setSubject(subject);
+            educationDay.setAudience(educationDayDto.getAudience());
+            User user = new User();
+            user.setId(educationDayDto.getId());
+            educationDay.setUser(user);
+            educationDay.setWeekNumber(educationDayDto.getWeekNumber());
+            educationDay.setClassNumber(educationDayDto.getClassNumber());
+            List<Group> groups = new ArrayList<>();
+            for (Long id : educationDayDto.getGroupsId())
+            {
+                Group group = new Group();
+                group.setId(id);
+                groups.add(group);
+            }
+            educationDay.setGroup(groups);
+            educationDay.setDate(educationDayDto.getDate());
+            educationDayDao.save(educationDay);
+        }
+        return ResponseEntity.ok().build();
     }
 }

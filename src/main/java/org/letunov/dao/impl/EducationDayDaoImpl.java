@@ -313,8 +313,6 @@ public class EducationDayDaoImpl implements EducationDayDao
                 {
                     educationDay = new EducationDay();
                     educationDay.setId(educationDayId);
-                    DayOfWeek dayOfWeek = DayOfWeek.of(rs.getInt("week_number"));
-                    educationDay.setDayOfWeek(dayOfWeek);
                     educationDay.setDate(rs.getDate("date").toLocalDate());
                     educationDay.setAudience(rs.getInt("audience"));
                     educationDay.setClassNumber(rs.getInt("class_number"));

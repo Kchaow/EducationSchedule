@@ -8,6 +8,10 @@ import org.letunov.dao.GroupDao;
 import org.letunov.dao.UserDao;
 import org.letunov.domainModel.*;
 import org.letunov.service.ScheduleService;
+import org.letunov.service.dto.EducationDayDto;
+import org.letunov.service.dto.ScheduleDto;
+import org.letunov.service.dto.SubjectDto;
+import org.letunov.service.dto.UserNamesDto;
 import org.letunov.service.impl.ScheduleServiceImpl;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -16,12 +20,11 @@ import org.springframework.http.HttpStatusCode;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Objects;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -44,18 +47,18 @@ public class ScheduleServiceTest
         Group group = new Group();
         group.setId(groupId);
         group.setName(groupName);
-        when(groupDao.findByName(groupName)).thenReturn(group);
+        when(groupDao.findByName(anyString())).thenReturn(group);
 
         int weekNumber = 1;
-        List<EducationDay> educationDayList = getEducationDayList();
+        int educationDayCount = 6;
+        List<EducationDay> educationDayList = getEducationDayList(educationDayCount);
         when(educationDayDao.findByWeekNumberAndGroupOrderByDateAscClassNumberAsc(weekNumber, group)).thenReturn(educationDayList);
 
         User user = educationDayList.getFirst().getUser();
-        long userId = user.getId();
-        when(userDao.findById(userId)).thenReturn(user);
+        when(userDao.findById(anyLong())).thenReturn(user);
 
         assertAll(
-                () -> assertEquals(4, Objects.requireNonNull(scheduleService.getGroupSchedule(weekNumber, groupName).getBody()).getClasses().size()),
+                () -> assertEquals(educationDayCount, Objects.requireNonNull(scheduleService.getGroupSchedule(weekNumber, groupName).getBody()).getClasses().size()),
                 () -> assertEquals(HttpStatusCode.valueOf(200), scheduleService.getGroupSchedule(weekNumber, groupName).getStatusCode())
         );
     }
@@ -63,13 +66,60 @@ public class ScheduleServiceTest
     @Test
     public void getGroupScheduleTestShouldThrowException()
     {
-        String groupName = "БСБО-02-21";
-        when(groupDao.findByName(groupName)).thenReturn(null);
+        when(groupDao.findByName(anyString())).thenReturn(null);
 
-        assertThrowsExactly(NoSuchElementException.class, () -> scheduleService.getGroupSchedule(1, groupName));
+        assertThrowsExactly(NoSuchElementException.class, () -> scheduleService.getGroupSchedule(1, "groupName"));
     }
 
-    private List<EducationDay> getEducationDayList()
+    @Test
+    public void updateScheduleTestShouldReturnOk()
+    {
+        when(educationDayDao.save(any(EducationDay.class))).thenReturn(any(EducationDay.class));
+
+        int educationDayCount = 6;
+        ScheduleDto scheduleDto = convertToScheduleDto(getEducationDayList(educationDayCount));
+        assertEquals(HttpStatusCode.valueOf(200), scheduleService.updateSchedule(scheduleDto).getStatusCode());
+    }
+
+    @Test
+    public void updateScheduleTestShouldThrowException()
+    {
+        assertThrowsExactly(NullPointerException.class, () -> scheduleService.updateSchedule(null));
+    }
+
+    private ScheduleDto convertToScheduleDto(List<EducationDay> educationDayList)
+    {
+        ScheduleDto scheduleDto = new ScheduleDto();
+        List<EducationDayDto> educationDayDtoList = new ArrayList<>();
+        for (EducationDay educationDay : educationDayList)
+        {
+            List<Long> groupIds = new ArrayList<>();
+            educationDay.getGroup().forEach(x -> groupIds.add(x.getId()));
+            SubjectDto subjectDto = new SubjectDto();
+            subjectDto.setId(educationDay.getSubject().getId());
+            subjectDto.setName(educationDay.getSubject().getName());
+            UserNamesDto userNamesDto = new UserNamesDto();
+            userNamesDto.setId(educationDay.getUser().getId());
+            userNamesDto.setFirstName(educationDay.getUser().getFirstName());
+            userNamesDto.setLastName(educationDay.getUser().getLastName());
+            userNamesDto.setMiddleName(educationDay.getUser().getMiddleName());
+            EducationDayDto educationDayDto = EducationDayDto.builder()
+                    .id(educationDay.getId())
+                    .userNamesDto(userNamesDto)
+                    .subject(subjectDto)
+                    .audience(educationDay.getAudience())
+                    .classNumber(educationDay.getClassNumber())
+                    .groupsId(groupIds)
+                    .date(educationDay.getDate())
+                    .weekNumber(educationDay.getWeekNumber())
+                    .build();
+            educationDayDtoList.add(educationDayDto);
+        }
+        scheduleDto.setClasses(educationDayDtoList);
+        return scheduleDto;
+    }
+
+    private List<EducationDay> getEducationDayList(int size)
     {
         List<EducationDay> educationDayList = new ArrayList<>();
 
@@ -79,80 +129,57 @@ public class ScheduleServiceTest
 
         User user = new User();
         user.setId(2);
-        user.setFirstName("Степан");
-        user.setLastName("Крылов");
-        user.setMiddleName("Адамович");
+        user.setFirstName("firstName");
+        user.setLastName("lastName");
+        user.setMiddleName("middleName");
         user.setLogin("login");
         user.setEmail("email");
         user.setPassword("password");
         user.setGroup(null);
         user.setRole(role);
 
-        Group group1 = new Group();
-        group1.setId(1);
-        group1.setName("БСБО-01-21");
-        Group group2 = new Group();
-        group2.setId(2);
-        group2.setName("БСБО-02-21");
+        Group group = new Group();
+        group.setId(1);
+        group.setName("group");
         List<Group> groups = new ArrayList<>();
-        groups.add(group1);
-        groups.add(group2);
+        groups.add(group);
+
+        int weekNumber = 1;
+        int maxClass = 6;
 
         Subject subject1 = new Subject();
         subject1.setId(1);
-        subject1.setName("Математические модели и методы безопасного функционирования компонент программного обеспечения");
+        subject1.setName("firstSubject");
 
         Subject subject2 = new Subject();
-        subject2.setId(3);
-        subject2.setName("Методы и средства взаимодействия компонент программного обеспечения");
+        subject2.setId(2);
+        subject2.setName("secondSubject");
 
-        EducationDay educationDay1 = new EducationDay();
-        educationDay1.setId(1);
-        educationDay1.setWeekNumber(1);
-        educationDay1.setDate(LocalDate.of(2024, 2, 19));
-        educationDay1.setUser(user);
-        educationDay1.setAudience(255);
-        educationDay1.setClassNumber(1);
-        educationDay1.setDayOfWeek(DayOfWeek.MONDAY);
-        educationDay1.setGroup(groups);
-        educationDay1.setSubject(subject1);
-
-        EducationDay educationDay2 = new EducationDay();
-        educationDay2.setId(2);
-        educationDay2.setDate(LocalDate.of(2024, 2, 19));
-        educationDay2.setWeekNumber(1);
-        educationDay2.setUser(user);
-        educationDay2.setAudience(255);
-        educationDay2.setGroup(groups);
-        educationDay2.setClassNumber(2);
-        educationDay2.setDayOfWeek(DayOfWeek.MONDAY);
-        educationDay2.setSubject(subject1);
-
-        EducationDay educationDay3 = new EducationDay();
-        educationDay3.setId(5);
-        educationDay3.setDate(LocalDate.of(2024, 2, 21));
-        educationDay3.setWeekNumber(1);
-        educationDay3.setClassNumber(5);
-        List<Group> singleGroup = new ArrayList<>();
-        singleGroup.add(group2);
-        educationDay3.setGroup(singleGroup);
-        educationDay3.setSubject(subject2);
-        educationDay3.setAudience(249);
-
-        EducationDay educationDay4 = new EducationDay();
-        educationDay4.setId(6);
-        educationDay4.setDate(LocalDate.of(2024, 2, 21));
-        educationDay4.setWeekNumber(1);
-        educationDay4.setClassNumber(6);
-        singleGroup.add(group2);
-        educationDay4.setGroup(singleGroup);
-        educationDay4.setSubject(subject2);
-        educationDay4.setAudience(249);
-
-        educationDayList.add(educationDay1);
-        educationDayList.add(educationDay2);
-        educationDayList.add(educationDay3);
-        educationDayList.add(educationDay4);
+        LocalDate date = LocalDate.of(2024, 3, 4);
+        for (int i = 0, classNumber = 0; i < size; i++, classNumber++)
+        {
+            if (date.getDayOfWeek() == DayOfWeek.SUNDAY)
+            {
+                weekNumber++;
+                date = date.plusDays(1);
+            }
+            if (classNumber > maxClass)
+                classNumber = 1;
+            EducationDay educationDay = new EducationDay();
+            educationDay.setId(i+1);
+            educationDay.setWeekNumber(weekNumber);
+            educationDay.setDate(date);
+            educationDay.setUser(user);
+            educationDay.setAudience(255 + i);
+            educationDay.setClassNumber(classNumber);
+            educationDay.setGroup(groups);
+            if (i % 2 == 0)
+                educationDay.setSubject(subject1);
+            else
+                educationDay.setSubject(subject2);
+            date = date.plusDays(1);
+            educationDayList.add(educationDay);
+        }
         return educationDayList;
     }
 }
