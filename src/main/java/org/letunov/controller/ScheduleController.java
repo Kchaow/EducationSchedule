@@ -4,6 +4,7 @@ import org.letunov.service.ScheduleService;
 import org.letunov.service.dto.ScheduleDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -18,7 +19,7 @@ public class ScheduleController
     }
 
     @GetMapping("/{groupName}/{weekNumber}")
-    public ResponseEntity<ScheduleDto> foo(String groupName, int weekNumber)
+    public ResponseEntity<ScheduleDto> getSchedule(@PathVariable("groupName") String groupName,@PathVariable("weekNumber") int weekNumber)
     {
         return scheduleService.getGroupSchedule(weekNumber, groupName);
     }

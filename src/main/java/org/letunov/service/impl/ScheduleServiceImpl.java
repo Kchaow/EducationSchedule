@@ -13,6 +13,7 @@ import org.letunov.service.dto.ScheduleDto;
 import org.letunov.service.dto.SubjectDto;
 import org.letunov.service.dto.UserNamesDto;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
+@Service
 public class ScheduleServiceImpl implements ScheduleService
 {
     private final GroupDao groupDao;

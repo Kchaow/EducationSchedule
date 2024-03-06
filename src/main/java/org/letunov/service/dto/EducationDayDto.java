@@ -1,5 +1,6 @@
 package org.letunov.service.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,6 +20,7 @@ public class EducationDayDto
     private int weekNumber;
     private UserNamesDto userNamesDto;
     private List<Long> groupsId;
+    @JsonFormat(pattern = "yyyy/MM/dd")
     private LocalDate date;
     private int classNumber;
     private int audience;

@@ -1,5 +1,6 @@
 package org.letunov.domainModel;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -16,6 +17,7 @@ public class EducationDay extends AbstractEntity
     private User user;
     private List<Group> group;
     private Subject subject;
+    @JsonFormat(pattern = "yyyy/MM/dd")
     private LocalDate date;
     private int classNumber;
     private int audience;
