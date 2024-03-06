@@ -18,18 +18,18 @@ import javax.sql.DataSource;
 @Slf4j
 public class DataSourceConfig
 {
-    @Value("${datasource.user}")
-    private String user;
-    @Value("${datasource.password}")
-    private String password;
-    @Value("${datasource.jdbcUrl}")
-    private String jdbcUr;
+    //@Value("${datasource.user}")
+    private String user = "postgres";
+    //@Value("${datasource.password}")
+    private String password = "postgres";
+    //@Value("${datasource.jdbcUrl}")
+    private String jdbcUr = "jdbc:postgresql://postgres_db:5432/schedule";
 
     @Bean(destroyMethod = "close")
     public DataSource dataSource()
     {
-        try
-        {
+//        try
+//        {
             HikariConfig config = new HikariConfig();
             log.info("Configuration hikari pool with {} jdbcUrl", jdbcUr);
             config.setJdbcUrl(jdbcUr);
@@ -37,13 +37,14 @@ public class DataSourceConfig
             config.setUsername(user);
             log.info("Configuration hikari pool with {} password", password);
             config.setPassword(password);
+            config.setDriverClassName(org.postgresql.Driver.class.getName());
             return new HikariDataSource(config);
-        }
-        catch (Exception e)
-        {
-            log.error("Error hikari pool configuration: {}", e.getMessage());
-            return null;
-        }
+//        }
+//        catch (Exception e)
+//        {
+//            log.error("Error hikari pool configuration: {}", e.getMessage());
+//            return null;
+//        }
     }
 
     @Bean

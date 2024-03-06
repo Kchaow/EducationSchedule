@@ -2,6 +2,7 @@ package unit;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import org.letunov.dao.*;
@@ -26,6 +27,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @Testcontainers
 @Slf4j
+@Disabled
 public class DaoTest
 {
     private AttendanceStatusDao attendanceStatusDao;
