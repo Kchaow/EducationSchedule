@@ -3,7 +3,6 @@ package org.letunov;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
@@ -18,33 +17,21 @@ import javax.sql.DataSource;
 @Slf4j
 public class DataSourceConfig
 {
-    //@Value("${datasource.user}")
-    private String user = "postgres";
-    //@Value("${datasource.password}")
-    private String password = "postgres";
-    //@Value("${datasource.jdbcUrl}")
-    private String jdbcUr = "jdbc:postgresql://postgres_db:5432/schedule";
-
     @Bean(destroyMethod = "close")
     public DataSource dataSource()
     {
-//        try
-//        {
-            HikariConfig config = new HikariConfig();
-            log.info("Configuration hikari pool with {} jdbcUrl", jdbcUr);
-            config.setJdbcUrl(jdbcUr);
-            log.info("Configuration hikari pool with {} username", user);
-            config.setUsername(user);
-            log.info("Configuration hikari pool with {} password", password);
-            config.setPassword(password);
-            config.setDriverClassName(org.postgresql.Driver.class.getName());
-            return new HikariDataSource(config);
-//        }
-//        catch (Exception e)
-//        {
-//            log.error("Error hikari pool configuration: {}", e.getMessage());
-//            return null;
-//        }
+        HikariConfig config = new HikariConfig();
+        String jdbcUrl = "jdbc:postgresql://postgres_db:5432/schedule";
+        log.info("Configuration hikari pool with {} jdbcUrl", jdbcUrl);
+        config.setJdbcUrl(jdbcUrl);
+        String user = "postgres";
+        log.info("Configuration hikari pool with {} username", user);
+        config.setUsername(user);
+        String password = "postgres";
+        log.info("Configuration hikari pool with {} password", password);
+        config.setPassword(password);
+        config.setDriverClassName(org.postgresql.Driver.class.getName());
+        return new HikariDataSource(config);
     }
 
     @Bean

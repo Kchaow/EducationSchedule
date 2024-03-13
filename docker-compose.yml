@@ -4,17 +4,17 @@ name: schedule
 
 services:
   postgres_db:
-    container_name: education_schedule
-    image: postgres:latest
+    image: postgres:16.2
     ports:
-      - "5432:5432"
+      - "5430:5432"
     environment:
       - "POSTGRES_USER=postgres"
       - "POSTGRES_PASSWORD=postgres"
       - "POSTGRES_DB=schedule"
     volumes:
       - ./src/test/resources/:/docker-entrypoint-initdb.d
-  education-schedule-app:
+
+  education-schedule-backend:
     image: education-schedule
     depends_on:
       - postgres_db

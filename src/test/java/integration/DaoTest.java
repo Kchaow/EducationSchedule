@@ -1,4 +1,4 @@
-package unit;
+package integration;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @Testcontainers
 @Slf4j
-@Disabled
+//@Disabled
 public class DaoTest
 {
     private AttendanceStatusDao attendanceStatusDao;
