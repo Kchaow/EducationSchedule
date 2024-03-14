@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.Model;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -121,4 +122,9 @@ public class ScheduleServiceImpl implements ScheduleService
         }
         return ResponseEntity.ok().build();
     }
+
+//    public String getScheduleTemplate(Model model)
+//    {
+//
+//    }
 }

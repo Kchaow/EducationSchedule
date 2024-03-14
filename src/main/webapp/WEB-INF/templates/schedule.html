@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" th:href="@{/static/schedule.css}">
+    <script th:src="@{/static/schedule.js}"></script>
+</head>
+<body>
+    <input class="group-input" type="text">
+    <button class="show-button">Показать</button>
+    <div class="schedule-container">
+        <div class="schedule-day">
+            <p>Понедельник</p>
+            <div class="schedule-stroke-container" data-stroke-number="1">
+                <div class="stroke-number text-middle">
+                    <p>1.</p>
+                </div>
+                <div class="stroke-subject-teacher">
+                    <p data-subject-name></p>
+                    <p data-teacher></p>
+                </div>
+                <div class="stroke-audience text-middle">
+                    <p data-stroke-audience></p>
+                </div>
+            </div>
+            <div class="schedule-stroke-container" data-stroke-number="2">
+                <div class="stroke-number text-middle">
+                    <p>2.</p>
+                </div>
+                <div class="stroke-subject-teacher">
+                    <p data-subject-name></p>
+                    <p data-teacher></p>
+                </div>
+                <div class="stroke-audience text-middle">
+                    <p data-stroke-audience></p>
+                </div>
+            </div>
+            <div class="schedule-stroke-container" data-stroke-number="3">
+                <div class="stroke-number text-middle">
+                    <p>3.</p>
+                </div>
+                <div class="stroke-subject-teacher">
+                    <p data-subject-name></p>
+                    <p data-teacher></p>
+                </div>
+                <div class="stroke-audience text-middle">
+                    <p data-stroke-audience></p>
+                </div>
+            </div>
+            <div class="schedule-stroke-container" data-stroke-number="4">
+                <div class="stroke-number text-middle">
+                    <p>4.</p>
+                </div>
+                <div class="stroke-subject-teacher">
+                    <p data-subject-name></p>
+                    <p data-teacher></p>
+                </div>
+                <div class="stroke-audience text-middle">
+                    <p data-stroke-audience></p>
+                </div>
+            </div>
+            <div class="schedule-stroke-container" data-stroke-number="5">
+                <div class="stroke-number text-middle">
+                    <p>5.</p>
+                </div>
+                <div class="stroke-subject-teacher">
+                    <p data-subject-name></p>
+                    <p data-teacher></p>
+                </div>
+                <div class="stroke-audience text-middle">
+                    <p data-stroke-audience></p>
+                </div>
+            </div>
+            <div class="schedule-stroke-container" data-stroke-number="6">
+                <div class="stroke-number text-middle">
+                    <p>6.</p>
+                </div>
+                <div class="stroke-subject-teacher">
+                    <p data-subject-name></p>
+                    <p data-teacher></p>
+                </div>
+                <div class="stroke-audience text-middle">
+                    <p data-stroke-audience></p>
+                </div>
+            </div>
+        </div>
+        <div class="schedule-day">
+            <p>Вторник</p>
+            <div class="schedule-stroke-container">
+                <div class="stroke-number text-middle">
+                    <p data-stroke-number>1.</p>
+                </div>
+                <div class="stroke-subject-teacher">
+                    <p data-subject-name></p>
+                    <p data-teacher></p>
+                </div>
+                <div class="stroke-audience text-middle">
+                    <p data-stroke-audience></p>
+                </div>
+            </div>
+            <div class="schedule-stroke-container">
+                <div class="stroke-number text-middle">
+                    <p data-stroke-number>2.</p>
+                </div>
+                <div class="stroke-subject-teacher">
+                    <p data-subject-name></p>
+                    <p data-teacher></p>
+                </div>
+                <div class="stroke-audience text-middle">
+                    <p data-stroke-audience></p>
+                </div>
+            </div>
+            <div class="schedule-stroke-container">
+                <div class="stroke-number text-middle">
+                    <p data-stroke-number>3.</p>
+                </div>
+                <div class="stroke-subject-teacher">
+                    <p data-subject-name></p>
+                    <p data-teacher></p>
+                </div>
+                <div class="stroke-audience text-middle">
+                    <p data-stroke-audience></p>
+                </div>
+            </div>
+            <div class="schedule-stroke-container">
+                <div class="stroke-number text-middle">
+                    <p data-stroke-number>4.</p>
+                </div>
+                <div class="stroke-subject-teacher">
+                    <p data-subject-name></p>
+                    <p data-teacher></p>
+                </div>
+                <div class="stroke-audience text-middle">
+                    <p data-stroke-audience></p>
+                </div>
+            </div>
+            <div class="schedule-stroke-container">
+                <div class="stroke-number text-middle">
+                    <p data-stroke-number>5.</p>
+                </div>
+                <div class="stroke-subject-teacher">
+                    <p data-subject-name></p>
+                    <p data-teacher></p>
+                </div>
+                <div class="stroke-audience text-middle">
+                    <p data-stroke-audience></p>
+                </div>
+            </div>
+            <div class="schedule-stroke-container">
+                <div class="stroke-number text-middle">
+                    <p data-stroke-number>6.</p>
+                </div>
+                <div class="stroke-subject-teacher">
+                    <p data-subject-name></p>
+                    <p data-teacher></p>
+                </div>
+                <div class="stroke-audience text-middle">
+                    <p data-stroke-audience></p>
+                </div>
+            </div>
+        </div>
+        <div class="schedule-day">
+            <p>Среда</p>
+            <div class="schedule-stroke-container">
+                <div class="stroke-number text-middle">
+                    <p data-stroke-number>1.</p>
+                </div>
+                <div class="stroke-subject-teacher">
+                    <p data-subject-name></p>
+                    <p data-teacher></p>
+                </div>
+                <div class="stroke-audience text-middle">
+                    <p data-stroke-audience></p>
+                </div>
+            </div>
+            <div class="schedule-stroke-container">
+                <div class="stroke-number text-middle">
+                    <p data-stroke-number>2.</p>
+                </div>
+                <div class="stroke-subject-teacher">
+                    <p data-subject-name></p>
+                    <p data-teacher></p>
+                </div>
+                <div class="stroke-audience text-middle">
+                    <p data-stroke-audience></p>
+                </div>
+            </div>
+            <div class="schedule-stroke-container">
+                <div class="stroke-number text-middle">
+                    <p data-stroke-number>3.</p>
+                </div>
+                <div class="stroke-subject-teacher">
+                    <p data-subject-name></p>
+                    <p data-teacher></p>
+                </div>
+                <div class="stroke-audience text-middle">
+                    <p data-stroke-audience></p>
+                </div>
+            </div>
+            <div class="schedule-stroke-container">
+                <div class="stroke-number text-middle">
+                    <p data-stroke-number>4.</p>
+                </div>
+                <div class="stroke-subject-teacher">
+                    <p data-subject-name></p>
+                    <p data-teacher></p>
+                </div>
+                <div class="stroke-audience text-middle">
+                    <p data-stroke-audience></p>
+                </div>
+            </div>
+            <div class="schedule-stroke-container">
+                <div class="stroke-number text-middle">
+                    <p data-stroke-number>5.</p>
+                </div>
+                <div class="stroke-subject-teacher">
+                    <p data-subject-name></p>
+                    <p data-teacher></p>
+                </div>
+                <div class="stroke-audience text-middle">
+                    <p data-stroke-audience></p>
+                </div>
+            </div>
+            <div class="schedule-stroke-container">
+                <div class="stroke-number text-middle">
+                    <p data-stroke-number>6.</p>
+                </div>
+                <div class="stroke-subject-teacher">
+                    <p data-subject-name></p>
+                    <p data-teacher></p>
+                </div>
+                <div class="stroke-audience text-middle">
+                    <p data-stroke-audience></p>
+                </div>
+            </div>
+        </div>
+        <div class="schedule-day">
+            <p>Четверг</p>
+            <div class="schedule-stroke-container">
+                <div class="stroke-number text-middle">
+                    <p data-stroke-number>1.</p>
+                </div>
+                <div class="stroke-subject-teacher">
+                    <p data-subject-name></p>
+                    <p data-teacher></p>
+                </div>
+                <div class="stroke-audience text-middle">
+                    <p data-stroke-audience></p>
+                </div>
+            </div>
+            <div class="schedule-stroke-container">
+                <div class="stroke-number text-middle">
+                    <p data-stroke-number>2.</p>
+                </div>
+                <div class="stroke-subject-teacher">
+                    <p data-subject-name></p>
+                    <p data-teacher></p>
+                </div>
+                <div class="stroke-audience text-middle">
+                    <p data-stroke-audience></p>
+                </div>
+            </div>
+            <div class="schedule-stroke-container">
+                <div class="stroke-number text-middle">
+                    <p data-stroke-number>3.</p>
+                </div>
+                <div class="stroke-subject-teacher">
+                    <p data-subject-name></p>
+                    <p data-teacher></p>
+                </div>
+                <div class="stroke-audience text-middle">
+                    <p data-stroke-audience></p>
+                </div>
+            </div>
+            <div class="schedule-stroke-container">
+                <div class="stroke-number text-middle">
+                    <p data-stroke-number>4.</p>
+                </div>
+                <div class="stroke-subject-teacher">
+                    <p data-subject-name></p>
+                    <p data-teacher></p>
+                </div>
+                <div class="stroke-audience text-middle">
+                    <p data-stroke-audience></p>
+                </div>
+            </div>
+            <div class="schedule-stroke-container">
+                <div class="stroke-number text-middle">
+                    <p data-stroke-number>5.</p>
+                </div>
+                <div class="stroke-subject-teacher">
+                    <p data-subject-name></p>
+                    <p data-teacher></p>
+                </div>
+                <div class="stroke-audience text-middle">
+                    <p data-stroke-audience></p>
+                </div>
+            </div>
+            <div class="schedule-stroke-container">
+                <div class="stroke-number text-middle">
+                    <p data-stroke-number>6.</p>
+                </div>
+                <div class="stroke-subject-teacher">
+                    <p data-subject-name></p>
+                    <p data-teacher></p>
+                </div>
+                <div class="stroke-audience text-middle">
+                    <p data-stroke-audience></p>
+                </div>
+            </div>
+        </div>
+        <div class="schedule-day">
+            <p>Пятница</p>
+            <div class="schedule-stroke-container">
+                <div class="stroke-number text-middle">
+                    <p data-stroke-number>1.</p>
+                </div>
+                <div class="stroke-subject-teacher">
+                    <p data-subject-name></p>
+                    <p data-teacher></p>
+                </div>
+                <div class="stroke-audience text-middle">
+                    <p data-stroke-audience></p>
+                </div>
+            </div>
+            <div class="schedule-stroke-container">
+                <div class="stroke-number text-middle">
+                    <p data-stroke-number>2.</p>
+                </div>
+                <div class="stroke-subject-teacher">
+                    <p data-subject-name></p>
+                    <p data-teacher></p>
+                </div>
+                <div class="stroke-audience text-middle">
+                    <p data-stroke-audience></p>
+                </div>
+            </div>
+            <div class="schedule-stroke-container">
+                <div class="stroke-number text-middle">
+                    <p data-stroke-number>3.</p>
+                </div>
+                <div class="stroke-subject-teacher">
+                    <p data-subject-name></p>
+                    <p data-teacher></p>
+                </div>
+                <div class="stroke-audience text-middle">
+                    <p data-stroke-audience></p>
+                </div>
+            </div>
+            <div class="schedule-stroke-container">
+                <div class="stroke-number text-middle">
+                    <p data-stroke-number>4.</p>
+                </div>
+                <div class="stroke-subject-teacher">
+                    <p data-subject-name></p>
+                    <p data-teacher></p>
+                </div>
+                <div class="stroke-audience text-middle">
+                    <p data-stroke-audience></p>
+                </div>
+            </div>
+            <div class="schedule-stroke-container">
+                <div class="stroke-number text-middle">
+                    <p data-stroke-number>5.</p>
+                </div>
+                <div class="stroke-subject-teacher">
+                    <p data-subject-name></p>
+                    <p data-teacher></p>
+                </div>
+                <div class="stroke-audience text-middle">
+                    <p data-stroke-audience></p>
+                </div>
+            </div>
+            <div class="schedule-stroke-container">
+                <div class="stroke-number text-middle">
+                    <p data-stroke-number>6.</p>
+                </div>
+                <div class="stroke-subject-teacher">
+                    <p data-subject-name></p>
+                    <p data-teacher></p>
+                </div>
+                <div class="stroke-audience text-middle">
+                    <p data-stroke-audience></p>
+                </div>
+            </div>
+        </div>
+        <div class="schedule-day">
+            <p>Суббота</p>
+            <div class="schedule-stroke-container">
+                <div class="stroke-number text-middle">
+                    <p data-stroke-number>1.</p>
+                </div>
+                <div class="stroke-subject-teacher">
+                    <p data-subject-name></p>
+                    <p data-teacher></p>
+                </div>
+                <div class="stroke-audience text-middle">
+                    <p data-stroke-audience></p>
+                </div>
+            </div>
+            <div class="schedule-stroke-container">
+                <div class="stroke-number text-middle">
+                    <p data-stroke-number>2.</p>
+                </div>
+                <div class="stroke-subject-teacher">
+                    <p data-subject-name></p>
+                    <p data-teacher></p>
+                </div>
+                <div class="stroke-audience text-middle">
+                    <p data-stroke-audience></p>
+                </div>
+            </div>
+            <div class="schedule-stroke-container">
+                <div class="stroke-number text-middle">
+                    <p data-stroke-number>3.</p>
+                </div>
+                <div class="stroke-subject-teacher">
+                    <p data-subject-name></p>
+                    <p data-teacher></p>
+                </div>
+                <div class="stroke-audience text-middle">
+                    <p data-stroke-audience></p>
+                </div>
+            </div>
+            <div class="schedule-stroke-container">
+                <div class="stroke-number text-middle">
+                    <p data-stroke-number>4.</p>
+                </div>
+                <div class="stroke-subject-teacher">
+                    <p data-subject-name></p>
+                    <p data-teacher></p>
+                </div>
+                <div class="stroke-audience text-middle">
+                    <p data-stroke-audience></p>
+                </div>
+            </div>
+            <div class="schedule-stroke-container">
+                <div class="stroke-number text-middle">
+                    <p data-stroke-number>5.</p>
+                </div>
+                <div class="stroke-subject-teacher">
+                    <p data-subject-name></p>
+                    <p data-teacher></p>
+                </div>
+                <div class="stroke-audience text-middle">
+                    <p data-stroke-audience></p>
+                </div>
+            </div>
+            <div class="schedule-stroke-container">
+                <div class="stroke-number text-middle">
+                    <p data-stroke-number>6.</p>
+                </div>
+                <div class="stroke-subject-teacher">
+                    <p data-subject-name></p>
+                    <p data-teacher></p>
+                </div>
+                <div class="stroke-audience text-middle">
+                    <p data-stroke-audience></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- <div class="schedule-container">
+        <div class="schedule-day">
+            <div class="schedule-stroke-container">
+                <div class="stroke-number text-middle">
+                    <p data-stroke-number>1.</p>
+                </div>
+                <div class="stroke-subject-teacher">
+                    <p data-subject-name></p>
+                    <p data-teacher></p>
+                </div>
+                <div class="stroke-status text-middle">
+                    <p data-stroke-status></p>
+                </div>
+                <div class="stroke-audience text-middle">
+                    <p data-stroke-audience></p>
+                </div>
+            </div>
+            <div class="schedule-stroke-container">
+                <div class="stroke-number text-middle">
+                    <p data-stroke-number>2.</p>
+                </div>
+                <div class="stroke-subject-teacher">
+                    <p data-subject-name></p>
+                    <p data-teacher></p>
+                </div>
+                <div class="stroke-status text-middle">
+                    <p data-stroke-status></p>
+                </div>
+                <div class="stroke-audience text-middle">
+                    <p data-stroke-audience></p>
+                </div>
+            </div>
+            <div class="schedule-stroke-container">
+                <div class="stroke-number text-middle">
+                    <p data-stroke-number>3.</p>
+                </div>
+                <div class="stroke-subject-teacher">
+                    <p data-subject-name></p>
+                    <p data-teacher></p>
+                </div>
+                <div class="stroke-status text-middle">
+                    <p data-stroke-status></p>
+                </div>
+                <div class="stroke-audience text-middle">
+                    <p data-stroke-audience></p>
+                </div>
+            </div>
+            <div class="schedule-stroke-container">
+                <div class="stroke-number text-middle">
+                    <p data-stroke-number>4.</p>
+                </div>
+                <div class="stroke-subject-teacher">
+                    <p data-subject-name></p>
+                    <p data-teacher></p>
+                </div>
+                <div class="stroke-status text-middle">
+                    <p data-stroke-status></p>
+                </div>
+                <div class="stroke-audience text-middle">
+                    <p data-stroke-audience></p>
+                </div>
+            </div>
+            <div class="schedule-stroke-container">
+                <div class="stroke-number text-middle">
+                    <p data-stroke-number>5.</p>
+                </div>
+                <div class="stroke-subject-teacher">
+                    <p data-subject-name></p>
+                    <p data-teacher></p>
+                </div>
+                <div class="stroke-status text-middle">
+                    <p data-stroke-status></p>
+                </div>
+                <div class="stroke-audience text-middle">
+                    <p data-stroke-audience></p>
+                </div>
+            </div>
+            <div class="schedule-stroke-container">
+                <div class="stroke-number text-middle">
+                    <p data-stroke-number>6.</p>
+                </div>
+                <div class="stroke-subject-teacher">
+                    <p data-subject-name></p>
+                    <p data-teacher></p>
+                </div>
+                <div class="stroke-status text-middle">
+                    <p data-stroke-status></p>
+                </div>
+                <div class="stroke-audience text-middle">
+                    <p data-stroke-audience></p>
+                </div>
+            </div>
+        </div>
+    </div> -->
+</body>
+</html>

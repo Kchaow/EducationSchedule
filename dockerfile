@@ -1,7 +1,8 @@
 FROM maven:3.9.6-eclipse-temurin-21 as mvn
+ARG MAVEN_LOCAL_REP
 COPY . /app
 WORKDIR /app
-RUN ["mvn", "clean" ,"package", "-Punit-test-only"]
+RUN  ["mvn", "clean" ,"package", "-Punit-test-only"]
 WORKDIR /app/target
 RUN ["mv", "EducationSchedule-1.0-SNAPSHOT.war", "EducationSchedule.war"]
 
