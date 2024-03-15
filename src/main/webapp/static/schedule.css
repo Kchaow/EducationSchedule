@@ -9,7 +9,7 @@
 .schedule-day
 {
     width: 30rem;
-    height: 30rem;
+    height: 35rem;
     background-color: #ACACAC;
     display: flex;
     flex-direction: column;
@@ -24,7 +24,7 @@
 
 .schedule-stroke-container
 {
-    height: 3.5rem;
+    height: 5rem;
     margin: 0px 5px 0px 5px;
     display: flex;
 }

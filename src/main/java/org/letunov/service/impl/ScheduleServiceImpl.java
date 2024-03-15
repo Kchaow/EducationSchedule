@@ -12,6 +12,9 @@ import org.letunov.service.dto.EducationDayDto;
 import org.letunov.service.dto.ScheduleDto;
 import org.letunov.service.dto.SubjectDto;
 import org.letunov.service.dto.UserNamesDto;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
@@ -84,7 +87,9 @@ public class ScheduleServiceImpl implements ScheduleService
                     .build();
             scheduleDto.getClasses().add(educationDayDto);
         }
-        return ResponseEntity.ok(scheduleDto);
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setAccessControlAllowOrigin("*");
+        return new ResponseEntity<ScheduleDto>(scheduleDto, httpHeaders, HttpStatus.OK);
     }
 
     @Transactional(isolation = Isolation.REPEATABLE_READ)

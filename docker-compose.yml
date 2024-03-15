@@ -16,6 +16,8 @@ services:
 
   education-schedule-backend:
     image: education-schedule
+    volumes:
+      - ./server.xml:/usr/local/tomcat/conf/server.xml
     depends_on:
       - postgres_db
     ports:
