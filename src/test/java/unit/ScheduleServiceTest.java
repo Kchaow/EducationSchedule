@@ -44,24 +44,25 @@ public class ScheduleServiceTest
     @Test
     public void getGroupScheduleTestShouldReturnSchedule()
     {
-        String groupName = "БСБО-02-21";
-        long groupId = 2;
-        Group group = new Group();
-        group.setId(groupId);
-        group.setName(groupName);
-        when(groupDao.findByName(anyString())).thenReturn(group);
-
         int weekNumber = 1;
         int educationDayCount = 6;
         List<EducationDay> educationDayList = domainObjectGenerator.getEducationDayList(educationDayCount);
-        when(educationDayDao.findByWeekNumberAndGroupOrderByDateAscClassNumberAsc(weekNumber, group)).thenReturn(educationDayList);
-
+        Group group = educationDayList.getFirst().getGroup().getFirst();
         User user = educationDayList.getFirst().getUser();
+        int groupClassNumber = 0;
+        for (EducationDay educationDay : educationDayList) {
+            if (educationDay.getGroup().contains(group))
+                groupClassNumber++;
+        }
+        final int classNumber = groupClassNumber;
+
+        when(groupDao.findByName(anyString())).thenReturn(group);
+        when(educationDayDao.findByWeekNumberAndGroupOrderByDateAscClassNumberAsc(weekNumber, group)).thenReturn(educationDayList);
         when(userDao.findById(anyLong())).thenReturn(user);
 
         assertAll(
-                () -> assertEquals(educationDayCount, Objects.requireNonNull(scheduleService.getGroupSchedule(weekNumber, groupName).getBody()).getClasses().size()),
-                () -> assertEquals(HttpStatusCode.valueOf(200), scheduleService.getGroupSchedule(weekNumber, groupName).getStatusCode())
+                () -> assertEquals(classNumber, Objects.requireNonNull(scheduleService.getGroupSchedule(weekNumber, group.getName()).getBody()).getClasses().size()),
+                () -> assertEquals(HttpStatusCode.valueOf(200), scheduleService.getGroupSchedule(weekNumber, group.getName()).getStatusCode())
         );
     }
 

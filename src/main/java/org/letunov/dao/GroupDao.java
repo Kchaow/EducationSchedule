@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface GroupDao
 {
-    Page<Group> findAllOrderByNameAsc(int limit, int offset);
+    Page<Group> findAllOrderByNameAsc(int size, int page);
     Group findById(long id);
     Group findByName(String name);
     void deleteById(long id);

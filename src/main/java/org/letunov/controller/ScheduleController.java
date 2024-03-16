@@ -27,8 +27,9 @@ public class ScheduleController
     }
 
     @GetMapping
-    public String getScheduleModel()
+    public String getScheduleModel(Model model)
     {
+
         return "schedule";
     }
 }

@@ -7,6 +7,9 @@
     <script th:src="@{/static/schedule.js}"></script>
 </head>
 <body>
+    <select name="group-select">
+        <option th:each="group : ${groups}" th:value="${group}" th:text="${group}"></option>
+    </select>
     <input class="group-input" type="text">
     <button class="show-button">Показать</button>
     <div class="schedule-container">

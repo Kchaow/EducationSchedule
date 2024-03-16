@@ -18,6 +18,7 @@ services:
     image: education-schedule
     volumes:
       - ./server.xml:/usr/local/tomcat/conf/server.xml
+      - ./target/EducationSchedule-1.0-SNAPSHOT.war:/usr/local/tomcat/webapps/EducationSchedule.war
     depends_on:
       - postgres_db
     ports:
