@@ -8,10 +8,9 @@
 </head>
 <body>
     <select name="group-select">
+        <option value="default">Группа</option>
         <option th:each="group : ${groups}" th:value="${group}" th:text="${group}"></option>
     </select>
-    <input class="group-input" type="text">
-    <button class="show-button">Показать</button>
     <div class="schedule-container">
         <div class="schedule-day">
             <p>Понедельник</p>

@@ -1,13 +1,17 @@
 window.onload = function ()
 {
-    let showButton = document.querySelector(".show-button");
-    showButton.onclick = test;
+    let select = document.querySelector('[name="group-select"]');
+    select.addEventListener("change", getClasses);
 }
 
-async function test()
+async function getClasses()
 {
-    let groupInput = document.querySelector(".group-input");
+    clearStrokes();
+    let groupInput = document.querySelector('[name="group-select"]')
     let group = groupInput.value;
+    if (group === "default")
+        return;
+    console.log(group);
     let url = `http://localhost:8888/EducationSchedule/schedule/${group}/1`;
     let response = await fetch(url);
 
@@ -29,5 +33,16 @@ async function test()
     else 
     {
         alert("Ошибка HTTP: " + response.status);
+    }
+
+    function clearStrokes()
+    {
+        teachers = document.querySelectorAll('[data-teacher]');
+        subjects = document.querySelectorAll('[data-subject-name]');
+        strokes = document.querySelectorAll('[data-stroke-audience]');
+
+        teachers.forEach(el => el.textContent = "");
+        subjects.forEach(el => el.textContent = "");
+        strokes.forEach(el => el.textContent = "");
     }
 }
