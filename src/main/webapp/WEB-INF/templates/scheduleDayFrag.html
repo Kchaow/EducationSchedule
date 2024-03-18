@@ -1,0 +1,23 @@
+<div th:fragment="scheduleStrokeContainer(number)" class="schedule-stroke-container" th:data-stroke-number="${number}">
+    <div class="stroke-number text-middle">
+        <p th:text="${number} + '.'" p>1.</p>
+    </div>
+    <div class="stroke-subject-teacher">
+        <p data-subject-name></p>
+        <p data-teacher></p>
+    </div>
+    <div class="stroke-audience text-middle">
+        <p data-stroke-audience></p>
+    </div>
+</div>
+
+<div th:fragment="scheduleDay(weekDay)" class="schedule-day">
+    <p th:text="${weekDay}">Понедельник</p>
+    <p class="class-date"></p>
+    <div th:replace="~{::scheduleStrokeContainer('1')}"></div>
+    <div th:replace="~{::scheduleStrokeContainer('2')}"></div>
+    <div th:replace="~{::scheduleStrokeContainer('3')}"></div>
+    <div th:replace="~{::scheduleStrokeContainer('4')}"></div>
+    <div th:replace="~{::scheduleStrokeContainer('5')}"></div>
+    <div th:replace="~{::scheduleStrokeContainer('6')}"></div>
+</div>

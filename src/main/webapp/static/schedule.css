@@ -77,3 +77,19 @@
 {
     margin: 0px;
 }
+
+.week-number-select-container
+{
+    display: flex;
+    height: 2rem;
+}
+
+.prev-button
+{
+    margin-right: 15px;
+}
+
+.next-button
+{
+    margin-left: 15px;
+}
