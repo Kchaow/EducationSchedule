@@ -333,7 +333,7 @@ public class DaoTest
     @Test
     public void EducationDayFindByWeekNumberOrderByDateAscClassNumberAsc()
     {
-        List<EducationDay> educationDayList = educationDayDao.findByWeekNumberOrderByDateAscClassNumberAsc(1);
+        List<EducationDay> educationDayList = educationDayDao.findByWeekNumberOrderByDayOfWeekAscClassNumberAsc(1);
         assertAll(
                 () -> assertEquals(6, educationDayList.size()),
                 () -> assertEquals(2, educationDayList.getFirst().getGroup().size()),
@@ -345,7 +345,7 @@ public class DaoTest
     public void EducationDayFindByWeekNumberAndTeacherOrderByDateAscClassNumberAsc()
     {
         User user = userDao.findById(2);
-        List<EducationDay> educationDayList = educationDayDao.findByWeekNumberAndTeacherOrderByDateAscClassNumberAsc(1, user);
+        List<EducationDay> educationDayList = educationDayDao.findByWeekNumberAndTeacherOrderByDayOfWeekAscClassNumberAsc(1, user);
         assertAll(
                 () -> assertEquals(4, educationDayList.size()),
                 () -> assertEquals(2, educationDayList.getFirst().getGroup().size()),
@@ -357,7 +357,7 @@ public class DaoTest
     public void EducationDayFindByWeekNumberAndGroupOrderByDateAscClassNumberAsc()
     {
         Group group = groupDao.findById(1);
-        List<EducationDay> educationDayList = educationDayDao.findByWeekNumberAndGroupOrderByDateAscClassNumberAsc(1, group);
+        List<EducationDay> educationDayList = educationDayDao.findByWeekNumberAndGroupOrderByDayOfWeekAscClassNumberAsc(1, group);
         assertAll(
                 () -> assertEquals(2, educationDayList.size()),
                 () -> assertEquals(2, educationDayList.getFirst().getGroup().size()),
@@ -393,7 +393,7 @@ public class DaoTest
         EducationDay educationDay = new EducationDay();
         educationDay.setWeekNumber(1);
         educationDay.setClassNumber(3);
-        educationDay.setDate(LocalDate.now());
+        educationDay.setDayOfWeek(DayOfWeek.MONDAY);
         educationDay.setAudience(256);
         educationDay.setUser(user);
         educationDay.setSubject(subject);
@@ -408,7 +408,7 @@ public class DaoTest
 
 
         assertAll(
-                () -> assertEquals(7, educationDayDao.findByWeekNumberOrderByDateAscClassNumberAsc(1).size()),
+                () -> assertEquals(7, educationDayDao.findByWeekNumberOrderByDayOfWeekAscClassNumberAsc(1).size()),
                 () -> assertEquals(1, educationDayDao.findById(id).getGroup().size())
         );
     }
@@ -422,9 +422,8 @@ public class DaoTest
     @Test
     public void AttendanceFindByEducationDayDateAndEducationDaySubject()
     {
-        LocalDate localDate = LocalDate.of(2024, 2, 19);
         Subject subject = subjectDao.findById(1);
-        Attendance attendance = attendanceDao.findByEducationDayDateAndEducationDaySubject(localDate, subject);
+        Attendance attendance = attendanceDao.findByEducationDayDayOfWeekAndWeekNumberAndEducationDaySubject(DayOfWeek.MONDAY, 1, subject);
         assertAll(
                 () -> assertNotNull(attendance),
                 () -> assertEquals(2, attendance.getEducationDay().getGroup().size())

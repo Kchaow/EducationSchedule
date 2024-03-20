@@ -17,8 +17,7 @@ public class EducationDay extends AbstractEntity
     private User user;
     private List<Group> group;
     private Subject subject;
-    @JsonFormat(pattern = "yyyy/MM/dd")
-    private LocalDate date;
+    private DayOfWeek dayOfWeek;
     private int classNumber;
     private int audience;
 }

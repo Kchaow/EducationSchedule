@@ -47,15 +47,15 @@ public class EducationDayDaoImpl implements EducationDayDao
 
     @Override
     @Transactional(readOnly = true)
-    public List<EducationDay> findByWeekNumberOrderByDateAscClassNumberAsc(int weekNumber)
+    public List<EducationDay> findByWeekNumberOrderByDayOfWeekAscClassNumberAsc(int weekNumber)
     {
         final String query = """
-                SELECT e.id, e.week_number, e.user_id, e.date, e.class_number, e.audience,
+                SELECT e.id, e.week_number, e.user_id, e.day_of_week, e.class_number, e.audience,
                        e.subject_id, gr.group_id
                        FROM education_day e
                        LEFT JOIN education_day_group gr ON e.id = gr.education_day_id
                        WHERE e.week_number = ?
-                       ORDER BY e.date ASC
+                       ORDER BY e.day_of_week ASC
                 """;
         List<EducationDay> educationDayList = jdbcTemplate.query(query, new EducationDayExtractor(), weekNumber);
         if (educationDayList == null)
@@ -65,17 +65,17 @@ public class EducationDayDaoImpl implements EducationDayDao
 
     @Override
     @Transactional(readOnly = true)
-    public List<EducationDay> findByWeekNumberAndTeacherOrderByDateAscClassNumberAsc(int weekNumber, User user)
+    public List<EducationDay> findByWeekNumberAndTeacherOrderByDayOfWeekAscClassNumberAsc(int weekNumber, User user)
     {
         if (user == null)
             throw new NullPointerException("user arg cannot be null");
         final String query = """
-                SELECT e.id, e.week_number, e.user_id, e.date, e.class_number, e.audience,
+                SELECT e.id, e.week_number, e.user_id, e.day_of_week, e.class_number, e.audience,
                        e.subject_id, gr.group_id
                        FROM education_day e
                        LEFT JOIN education_day_group gr ON e.id = gr.education_day_id
                        WHERE e.week_number = ? AND e.user_id = ?
-                       ORDER BY e.date ASC,
+                       ORDER BY e.day_of_week ASC,
                        class_number ASC
                 """;
         List<EducationDay> educationDayList = jdbcTemplate.query(query, new EducationDayExtractor(), weekNumber, user.getId());
@@ -86,11 +86,11 @@ public class EducationDayDaoImpl implements EducationDayDao
 
     @Override
     @Transactional(readOnly = true)
-    public List<EducationDay> findByWeekNumberAndGroupOrderByDateAscClassNumberAsc(int weekNumber, Group group)
+    public List<EducationDay> findByWeekNumberAndGroupOrderByDayOfWeekAscClassNumberAsc(int weekNumber, Group group)
     {
         if (group == null)
             throw new NullPointerException("group arg cannot be null");
-        List<EducationDay> educationDayList = findByWeekNumberOrderByDateAscClassNumberAsc(weekNumber);
+        List<EducationDay> educationDayList = findByWeekNumberOrderByDayOfWeekAscClassNumberAsc(weekNumber);
         if (educationDayList == null)
             return null;
 
@@ -110,7 +110,7 @@ public class EducationDayDaoImpl implements EducationDayDao
     public EducationDay findById(long id)
     {
         final String query = """
-                SELECT e.id, e.week_number, e.user_id, e.date, e.class_number, e.audience,
+                SELECT e.id, e.week_number, e.user_id, e.day_of_week, e.class_number, e.audience,
                        e.subject_id, gr.group_id
                        FROM education_day e
                        LEFT JOIN education_day_group gr ON e.id = gr.education_day_id
@@ -142,7 +142,7 @@ public class EducationDayDaoImpl implements EducationDayDao
             throw new NullPointerException("educationDay arg cannot be null");
         else if (educationDay.getWeekNumber() <= 0)
             throw new NullPointerException("educationDay weekNumber cannot be less or equal 0");
-        else if (educationDay.getDate() == null)
+        else if (educationDay.getDayOfWeek() == null)
             throw new NullPointerException("educationDay date cannot be null");
         else if (educationDay.getSubject() == null)
             throw new NullPointerException("educationDay subject cannot be null");
@@ -160,11 +160,11 @@ public class EducationDayDaoImpl implements EducationDayDao
         if (educationDay.getId() != 0 && findById(educationDay.getId()) != null)
         {
             final String query = """
-                    UPDATE education_day SET week_number = ?, user_id = ?, "date" = ?, class_number = ?,
+                    UPDATE education_day SET week_number = ?, user_id = ?, day_of_week = ?, class_number = ?,
                                       audience = ?, subject_id = ? WHERE id = ?;
                     """;
             jdbcTemplate.update(query, educationDay.getWeekNumber(), educationDay.getUser() == null ? null : educationDay.getUser().getId(),
-                    educationDay.getDate(), educationDay.getClassNumber(), educationDay.getAudience() <= 0 ? null : educationDay.getAudience(),
+                    educationDay.getDayOfWeek().getValue(), educationDay.getClassNumber(), educationDay.getAudience() <= 0 ? null : educationDay.getAudience(),
                     educationDay.getSubject().getId(), educationDay.getId());
             if (educationDay.getGroup() != null && !educationDay.getGroup().isEmpty())
             {
@@ -203,7 +203,7 @@ public class EducationDayDaoImpl implements EducationDayDao
             return findById(educationDay.getId());
         }
         final String query = """
-                INSERT INTO education_day(week_number, user_id, "date", class_number, audience, subject_id)
+                INSERT INTO education_day(week_number, user_id, day_of_week, class_number, audience, subject_id)
                 VALUES(?,?,?,?,?,?);
                 """;
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -313,7 +313,7 @@ public class EducationDayDaoImpl implements EducationDayDao
                 {
                     educationDay = new EducationDay();
                     educationDay.setId(educationDayId);
-                    educationDay.setDate(rs.getDate("date").toLocalDate());
+                    educationDay.setDayOfWeek(DayOfWeek.of(rs.getInt("day_of_week")));
                     educationDay.setAudience(rs.getInt("audience"));
                     educationDay.setClassNumber(rs.getInt("class_number"));
                     educationDay.setWeekNumber(rs.getInt("week_number"));
@@ -370,7 +370,7 @@ public class EducationDayDaoImpl implements EducationDayDao
                 preparedStatement.setLong(2, educationDay.getUser().getId());
             else
                 preparedStatement.setNull(2, Types.NULL);
-            preparedStatement.setDate(3, Date.valueOf(educationDay.getDate()));
+            preparedStatement.setInt(3, educationDay.getDayOfWeek().getValue());
             preparedStatement.setInt(4, educationDay.getClassNumber());
             if (educationDay.getAudience() > 0)
                 preparedStatement.setInt(5, educationDay.getAudience());

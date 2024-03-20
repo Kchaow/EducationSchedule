@@ -1,6 +1,7 @@
 package unit;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.Before;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -41,6 +42,13 @@ public class ScheduleServiceTest
     ScheduleServiceImpl scheduleService;
     DomainObjectGenerator domainObjectGenerator = new DomainObjectGenerator();
 
+    @BeforeEach
+    public void SetupEducationDateStart()
+    {
+        LocalDate localDate = LocalDate.of(2024, 3, 20);
+        scheduleService.setEducationDateStart(localDate);
+    }
+
     @Test
     public void getGroupScheduleTestShouldReturnSchedule()
     {
@@ -57,7 +65,7 @@ public class ScheduleServiceTest
         final int classNumber = groupClassNumber;
 
         when(groupDao.findByName(anyString())).thenReturn(group);
-        when(educationDayDao.findByWeekNumberAndGroupOrderByDateAscClassNumberAsc(weekNumber, group)).thenReturn(educationDayList);
+        when(educationDayDao.findByWeekNumberAndGroupOrderByDayOfWeekAscClassNumberAsc(weekNumber, group)).thenReturn(educationDayList);
         when(userDao.findById(anyLong())).thenReturn(user);
 
         assertAll(

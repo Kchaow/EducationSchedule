@@ -40,7 +40,7 @@ CREATE TABLE education_day
     id SERIAL PRIMARY KEY,
     week_number INTEGER NOT NULL,
     user_id INTEGER REFERENCES "user" (id),
-    "date" DATE NOT NULL,
+    day_of_week INTEGER NOT NULL,
     class_number INTEGER NOT NULL CHECK(class_number > 0),
     audience INTEGER,
     subject_id INTEGER REFERENCES subject (id) ON DELETE CASCADE NOT NULL
@@ -93,13 +93,13 @@ INSERT INTO "user"(first_name, last_name, middle_name, password, login, email, g
     ('Медведева', 'Арина', 'Вячеславовна', '$2a$10$3BuW8KFLzOksrT73XsDD0.4nDvswn0jpm.d9VDvFov0hiOyMGlxW2', 'med_ar', 'med_ar@gmail.com', 3, 2),
     ('Матвеева', 'Елена', 'Фёдоровна', '$2a$10$3BuW8KFLzOksrT73XsDD0.4nDvswn0jpm.d9VDvFov0hiOyMGlxW2', 'mat_el', 'mat_el@gmail.com', 3, 2);
 
-INSERT INTO education_day(week_number, user_id, "date", class_number, audience, subject_id) VALUES
-    (1, 2, '2024-02-19', 1, 255, 1),
-    (1, 2, '2024-02-19', 2, 255, 1),
-    (1, 3, '2024-02-19', 3, 357, 2),
-    (1, 3, '2024-02-19', 4, 357, 2),
-    (1, 2, '2024-02-21', 5, 249, 3),
-    (1, 2, '2024-02-21', 6, 249, 3);
+INSERT INTO education_day(week_number, user_id, day_of_week, class_number, audience, subject_id) VALUES
+    (1, 2, 1, 1, 255, 1),
+    (1, 2, 1, 2, 255, 1),
+    (1, 3, 1, 3, 357, 2),
+    (1, 3, 1, 4, 357, 2),
+    (1, 2, 3, 5, 249, 3),
+    (1, 2, 3, 6, 249, 3);
 
 INSERT INTO education_day_group(group_id, education_day_id) VALUES
     (1, 1),

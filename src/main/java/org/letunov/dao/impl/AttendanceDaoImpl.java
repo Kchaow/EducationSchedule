@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.*;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
@@ -49,19 +50,21 @@ public class AttendanceDaoImpl implements AttendanceDao
 
     @Override
     @Transactional(readOnly = true)
-    public Attendance findByEducationDayDateAndEducationDaySubject(LocalDate date, Subject subject)
+    public Attendance findByEducationDayDayOfWeekAndWeekNumberAndEducationDaySubject(DayOfWeek dayOfWeek, int weekNumber, Subject subject)
     {
-        if (date == null)
+        if (dayOfWeek == null)
             throw new NullPointerException("date arg cannot be null");
+        if (weekNumber < 1)
+            throw new IllegalArgumentException("weekNumber cannot be lower 1");
         if (subject == null)
             throw new NullPointerException("subject arg cannot be null");
         final String query = """
-                SELECT att.id, attendance_status_id, att.user_id, education_day_id, "date", subject_id
+                SELECT att.id, attendance_status_id, att.user_id, education_day_id, day_of_week, subject_id, week_number
                 FROM attendance att
                 LEFT JOIN education_day ed ON education_day_id = ed.id
-                WHERE "date" = ? AND subject_id = ?
+                WHERE day_of_week = ? AND week_number = ? AND subject_id = ?
                 """;
-        List<Attendance> attendances = jdbcTemplate.query(query, new AttendanceRowMapper(), date, subject.getId());
+        List<Attendance> attendances = jdbcTemplate.query(query, new AttendanceRowMapper(), dayOfWeek.getValue(), weekNumber, subject.getId());
         fillDependence(attendances);
         if (attendances.isEmpty())
             return null;

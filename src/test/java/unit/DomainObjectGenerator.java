@@ -36,7 +36,7 @@ public class DomainObjectGenerator
                     .audience(educationDay.getAudience())
                     .classNumber(educationDay.getClassNumber())
                     .groupsId(groupIds)
-                    .date(educationDay.getDate())
+                    .dayOfWeek(educationDay.getDayOfWeek().getValue())
                     .weekNumber(educationDay.getWeekNumber())
                     .build();
             educationDayDtoList.add(educationDayDto);
@@ -58,18 +58,18 @@ public class DomainObjectGenerator
         Role role = new Role();
         role.setId(3);
         role.setName("teacher");
-        LocalDate date = LocalDate.of(2024, 2, 1);
+        int dayOfWeek = 1;
 
         Random random = new Random();
         int weekNumber = 1;
 
         for (int i = 0; i < size; i++)
         {
-            if (date.getDayOfWeek() == DayOfWeek.SUNDAY)
+            if (dayOfWeek == 7)
             {
                 i--;
                 weekNumber++;
-                date = date.plusDays(1);
+                dayOfWeek = 1;
                 continue;
             }
             int totalClassNumberAtDay = random.nextInt(2, 7);
@@ -110,7 +110,7 @@ public class DomainObjectGenerator
                 educationDay.setId(i);
                 educationDay.setAudience(audience);
                 educationDay.setClassNumber(classNumber);
-                educationDay.setDate(date);
+                educationDay.setDayOfWeek(DayOfWeek.of(dayOfWeek));
                 educationDay.setWeekNumber(weekNumber);
                 educationDay.setSubject(subject);
                 educationDay.setUser(user);
@@ -120,7 +120,7 @@ public class DomainObjectGenerator
                 classNumber++;
                 totalClassNumberAtDay--;
             }
-            date = date.plusDays(1);
+            dayOfWeek++;
         }
 
         return educationDayList;

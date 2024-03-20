@@ -36,7 +36,7 @@ public class SecurityConfig
     {
         http.authorizeHttpRequests((authorize) -> authorize
                         .requestMatchers(new AntPathRequestMatcher("/admin/**")).hasAuthority("admin")
-                        .requestMatchers(new AntPathRequestMatcher("/schedule/**")).authenticated()
+                        .requestMatchers(new AntPathRequestMatcher("/schedule/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/static/**")).permitAll())
                 .logout(httpSecurityLogoutConfigurer -> httpSecurityLogoutConfigurer
                         .logoutUrl("/exit")
@@ -49,7 +49,7 @@ public class SecurityConfig
                         .loginProcessingUrl("/login")
                         .defaultSuccessUrl("/schedule")
                         .permitAll())
-                .csrf(AbstractHttpConfigurer::disable);
+                .csrf(AbstractHttpConfigurer::disable); //Исправить!
 //                        .failureUrl("")
         return http.build();
     }
