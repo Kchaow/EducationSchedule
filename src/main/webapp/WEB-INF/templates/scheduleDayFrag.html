@@ -6,6 +6,9 @@
         <p data-subject-name></p>
         <p data-teacher></p>
     </div>
+    <div class="stroke-status text-middle">
+        <p data-stroke-status></p>
+    </div>
     <div class="stroke-audience text-middle">
         <p data-stroke-audience></p>
     </div>
@@ -13,7 +16,7 @@
 
 <div th:fragment="scheduleDay(weekDay)" class="schedule-day">
     <p th:text="${weekDay}">Понедельник</p>
-    <p class="class-date"></p>
+    <p class="date"></p>
     <div th:replace="~{::scheduleStrokeContainer('1')}"></div>
     <div th:replace="~{::scheduleStrokeContainer('2')}"></div>
     <div th:replace="~{::scheduleStrokeContainer('3')}"></div>

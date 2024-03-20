@@ -20,7 +20,6 @@ public class EducationDayDto
     private int weekNumber;
     private UserNamesDto userNamesDto;
     private List<Long> groupsId;
-    @JsonFormat(pattern = "yyyy/MM/dd")
     private int dayOfWeek;
     private int classNumber;
     private int audience;

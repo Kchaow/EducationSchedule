@@ -3,6 +3,9 @@ package org.letunov.service.impl;
 import org.letunov.dao.GroupDao;
 import org.letunov.domainModel.Group;
 import org.letunov.service.GroupService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -23,5 +26,12 @@ public class GroupServiceImpl implements GroupService
         List<String> groupNames = new ArrayList<>();
         groupDao.findAllOrderByNameAsc(10, 0).stream().forEach((group) -> groupNames.add(group.getName()));
         return groupNames;
+    }
+
+    @Override
+    public ResponseEntity<Group> getStudentGroup(long studentId)
+    {
+        Group group = groupDao.findByUserId(studentId);
+        return new ResponseEntity<Group>(group, HttpStatus.OK);
     }
 }

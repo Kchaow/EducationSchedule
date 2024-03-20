@@ -26,6 +26,14 @@
         <div th:replace="~{scheduleDayFrag::scheduleDay('Пятница')}"></div>
         <div th:replace="~{scheduleDayFrag::scheduleDay('Суббота')}"></div>
     </div>
+    <dic sec:authorize="hasAuthority('student')">
+        <!-- <div sec:authentication="principal.authorities.contains"> -->
+        <p>Студент</p>
+    <!-- </div> -->
+    </dic>
+    <!-- <div sec:authentication="authorities.contains('student')">
+        <p>Студент</p>
+    </div> -->
     <!-- <div class="schedule-container">
         <div class="schedule-day">
             <div class="schedule-stroke-container">

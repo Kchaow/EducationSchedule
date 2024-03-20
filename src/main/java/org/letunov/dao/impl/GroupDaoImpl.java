@@ -39,6 +39,20 @@ public class GroupDaoImpl implements GroupDao
     }
 
     @Override
+    public Group findByUserId(long id)
+    {
+        final String query = "SELECT gr.id, name FROM \"group\" gr JOIN \"user\" u ON gr.id = u.group_id WHERE u.id=?";
+        try
+        {
+            return jdbcTemplate.queryForObject(query, new GroupRowMapper(), id);
+        }
+        catch (EmptyResultDataAccessException e)
+        {
+            return null;
+        }
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public Group findById(long id)
     {
