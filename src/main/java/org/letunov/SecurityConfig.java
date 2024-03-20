@@ -8,6 +8,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -20,7 +21,7 @@ import javax.sql.DataSource;
 
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity
+//@EnableMethodSecurity
 public class SecurityConfig
 {
     private DataSource dataSource;
@@ -33,44 +34,35 @@ public class SecurityConfig
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception
     {
-        http.authorizeHttpRequests((authorize) ->
-                authorize
-//                        .requestMatchers("admin/**").hasAuthority("admin")
-//                        .requestMatchers("/").authenticated()
-//                        .requestMatchers("schedule/**").permitAll()
-                        .requestMatchers(new AntPathRequestMatcher("admin/**")).hasAuthority("admin")
-//                        .requestMatchers(new AntPathRequestMatcher("/")).authenticated()
-                        .requestMatchers(new AntPathRequestMatcher("/schedule/**")).permitAll()
-                        .requestMatchers(new AntPathRequestMatcher("/static/**")).permitAll()
-        ).formLogin((formLogin) ->
-                formLogin
+        http.authorizeHttpRequests((authorize) -> authorize
+                        .requestMatchers(new AntPathRequestMatcher("/admin/**")).hasAuthority("admin")
+                        .requestMatchers(new AntPathRequestMatcher("/schedule/**")).authenticated()
+                        .requestMatchers(new AntPathRequestMatcher("/static/**")).permitAll())
+                .logout(httpSecurityLogoutConfigurer -> httpSecurityLogoutConfigurer
+                        .logoutUrl("/exit")
+                        .permitAll()
+                        .clearAuthentication(true))
+                .formLogin((formLogin) -> formLogin
                         .usernameParameter("username")
                         .passwordParameter("password")
                         .loginPage("/login")
-//                        .loginProcessingUrl("login")
-                        .permitAll());
+                        .loginProcessingUrl("/login")
+                        .defaultSuccessUrl("/schedule")
+                        .permitAll())
+                .csrf(AbstractHttpConfigurer::disable);
 //                        .failureUrl("")
-//                        .loginProcessingUrl(""));
         return http.build();
     }
-
-//    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-//        String usersByUsernameQuery = "SELECT login, password, 'true' FROM \"user\" WHERE login = ?";
-//        String authoritiesByUsernameQuery = "SELECT login, name FROM \"user\" u " +
-//                                        "JOIN \"role\" r ON u.role_id = r.id WHERE login = ?";
-//        auth.jdbcAuthentication().dataSource(dataSource)
-//                .usersByUsernameQuery(usersByUsernameQuery)
-//                .authoritiesByUsernameQuery(authoritiesByUsernameQuery);
-//    }
 
     @Bean
     AuthenticationManagerBuilder authenticationManagerBuilder(ObjectPostProcessor<Object>
                                                                       objectPostProcessor, DataSource dataSource) throws Exception {
-        final String usersByUsernameQuery = "SELECT login, password, 'true' FROM \"user\" WHERE login = ?";
-        final String authoritiesByUsernameQuery = "SELECT login, name FROM \"user\" u " +
+        final String usersByUsernameQuery = "SELECT login as username, password, 'true' as enabled FROM \"user\" WHERE login = ?";
+        final String authoritiesByUsernameQuery = "SELECT login as username, name as authority  FROM \"user\" u " +
                 "JOIN \"role\" r ON u.role_id = r.id WHERE login = ?";
         AuthenticationManagerBuilder authenticationManagerBuilder = new AuthenticationManagerBuilder(objectPostProcessor);
         authenticationManagerBuilder.jdbcAuthentication().dataSource(dataSource)
+                .passwordEncoder(passwordEncoder())
                 .usersByUsernameQuery(usersByUsernameQuery)
                 .authoritiesByUsernameQuery(authoritiesByUsernameQuery);
         return authenticationManagerBuilder;
@@ -85,6 +77,6 @@ public class SecurityConfig
     @Bean
     public PasswordEncoder passwordEncoder()
     {
-        return new BCryptPasswordEncoder();
+        return new BCryptPasswordEncoder(BCryptPasswordEncoder.BCryptVersion.$2A, 10);
     }
 }

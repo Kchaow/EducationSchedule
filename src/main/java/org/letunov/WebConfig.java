@@ -10,6 +10,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.ViewResolverRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.mvc.WebContentInterceptor;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 import org.thymeleaf.spring6.templateresolver.SpringResourceTemplateResolver;
 import org.thymeleaf.spring6.view.ThymeleafViewResolver;
@@ -76,4 +77,12 @@ public class WebConfig implements WebMvcConfigurer, ApplicationContextAware
         registry.addResourceHandler("/static/**")
                 .addResourceLocations("/static/");
     }
+
+//    @Bean
+//    WebContentInterceptor webChangeInterceptor() {
+//        var webContentInterceptor = new WebContentInterceptor();
+//        webContentInterceptor.setCacheSeconds(0);
+//        webContentInterceptor.setSupportedMethods("GET", "POST", "PUT", "DELETE");
+//        return webContentInterceptor;
+//    }
 }

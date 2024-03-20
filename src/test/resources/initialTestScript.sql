@@ -28,7 +28,7 @@ CREATE TABLE "user"
     first_name VARCHAR(50) NOT NULL,
     last_name VARCHAR(50) NOT NULL,
     middle_name VARCHAR(50),
-    password VARCHAR(30) NOT NULL,
+    password VARCHAR(255) NOT NULL,
     login VARCHAR(25) UNIQUE NOT NULL,
     email VARCHAR(50) UNIQUE NOT NULL,
     group_id INTEGER REFERENCES "group" (id) ON DELETE SET NULL,
@@ -83,15 +83,15 @@ INSERT INTO attendance_status(name) VALUES
     ('отсутствует по уважительной причине');
 
 INSERT INTO "user"(first_name, last_name, middle_name, password, login, email, group_id, role_id) VALUES
-    ('Тихонова', 'Арина', 'Марковна', '1234', 'tih_ar', 'tih_ar@gmail.com', null, 1),
-    ('Крылов', 'Степан', 'Адамович', '1234', 'kril_step', 'kril_step@gmail.com', null, 3),
-    ('Зайцев', 'Лука', 'Ярославович', '1234', 'zaiz_luk', 'zaiz_luk@gmail.com', null, 3),
-    ('Копылова', 'Маргарита', 'Гордеевна', '1234', 'kopil_marg', 'kopil_marg@gmail.com', 1, 2),
-    ('Ракова', 'Таисия', 'Ивановна', '1234', 'rak_tai', 'rak_tai@gmail.com', 1, 2),
-    ('Колесникова', 'Варвара', 'Игоревна', '1234', 'kol_var', 'kol_var@gmail.com', 2, 2),
-    ('Голубева', 'Кира', 'Дмитриевна', '1234', 'gol_kir', 'gol_kir@gmail.com', 2, 2),
-    ('Медведева', 'Арина', 'Вячеславовна', '1234', 'med_ar', 'med_ar@gmail.com', 3, 2),
-    ('Матвеева', 'Елена', 'Фёдоровна', '1234', 'mat_el', 'mat_el@gmail.com', 3, 2);
+    ('Тихонова', 'Арина', 'Марковна', '$2a$10$3BuW8KFLzOksrT73XsDD0.4nDvswn0jpm.d9VDvFov0hiOyMGlxW2', 'tih_ar', 'tih_ar@gmail.com', null, 1),
+    ('Крылов', 'Степан', 'Адамович', '$2a$10$3BuW8KFLzOksrT73XsDD0.4nDvswn0jpm.d9VDvFov0hiOyMGlxW2', 'kril_step', 'kril_step@gmail.com', null, 3),
+    ('Зайцев', 'Лука', 'Ярославович', '$2a$10$3BuW8KFLzOksrT73XsDD0.4nDvswn0jpm.d9VDvFov0hiOyMGlxW2', 'zaiz_luk', 'zaiz_luk@gmail.com', null, 3),
+    ('Копылова', 'Маргарита', 'Гордеевна', '$2a$10$3BuW8KFLzOksrT73XsDD0.4nDvswn0jpm.d9VDvFov0hiOyMGlxW2', 'kopil_marg', 'kopil_marg@gmail.com', 1, 2),
+    ('Ракова', 'Таисия', 'Ивановна', '$2a$10$3BuW8KFLzOksrT73XsDD0.4nDvswn0jpm.d9VDvFov0hiOyMGlxW2', 'rak_tai', 'rak_tai@gmail.com', 1, 2),
+    ('Колесникова', 'Варвара', 'Игоревна', '$2a$10$3BuW8KFLzOksrT73XsDD0.4nDvswn0jpm.d9VDvFov0hiOyMGlxW2', 'kol_var', 'kol_var@gmail.com', 2, 2),
+    ('Голубева', 'Кира', 'Дмитриевна', '$2a$10$3BuW8KFLzOksrT73XsDD0.4nDvswn0jpm.d9VDvFov0hiOyMGlxW2', 'gol_kir', 'gol_kir@gmail.com', 2, 2),
+    ('Медведева', 'Арина', 'Вячеславовна', '$2a$10$3BuW8KFLzOksrT73XsDD0.4nDvswn0jpm.d9VDvFov0hiOyMGlxW2', 'med_ar', 'med_ar@gmail.com', 3, 2),
+    ('Матвеева', 'Елена', 'Фёдоровна', '$2a$10$3BuW8KFLzOksrT73XsDD0.4nDvswn0jpm.d9VDvFov0hiOyMGlxW2', 'mat_el', 'mat_el@gmail.com', 3, 2);
 
 INSERT INTO education_day(week_number, user_id, "date", class_number, audience, subject_id) VALUES
     (1, 2, '2024-02-19', 1, 255, 1),
