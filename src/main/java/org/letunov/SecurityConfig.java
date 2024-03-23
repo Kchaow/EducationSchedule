@@ -30,10 +30,10 @@ public class SecurityConfig
     {
         http.authorizeHttpRequests((authorize) -> authorize
                         .requestMatchers(new AntPathRequestMatcher("/admin/**")).hasAuthority("admin")
+                        .requestMatchers(new AntPathRequestMatcher("/schedule/templates/**")).hasAuthority("admin")
                         .requestMatchers(new AntPathRequestMatcher("/schedule/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/static/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/**")).authenticated())
-                //.addFilterAfter(postAuthorizationFilter , UsernamePasswordAuthenticationFilter.class)
                 .logout(httpSecurityLogoutConfigurer -> httpSecurityLogoutConfigurer
                         .logoutUrl("/exit")
                         .permitAll()

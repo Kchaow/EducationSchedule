@@ -72,7 +72,10 @@ CREATE TABLE attendance
 );
 
 INSERT INTO schedule_template(name, start_date, week_count, is_active) VALUES
-    ('first_template', '2024-03-18', 16, TRUE);
+    ('first_template', '2024-03-18', 16, TRUE),
+    ('second_template', '2024-03-18', 12, FALSE),
+    ('third_template', '2024-03-18', 8, FALSE),
+    ('fourth_template', '2024-03-18', 14, FALSE);
 
 INSERT INTO subject(name) VALUES
     ('Математические модели и методы безопасного функционирования компонент программного обеспечения'),

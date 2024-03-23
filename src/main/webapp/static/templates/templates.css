@@ -1,0 +1,19 @@
+.template-box
+{
+    background-color: #ACACAC;
+    height: 2rem;
+    width: 30rem;
+    margin: 5px 0px 5px 0px;
+    padding: 10px 0px 0px 10px;
+}
+
+.template-flex-container
+{
+    display: flex;
+    align-items: center;
+}
+
+input[name="delete-button"]
+{
+    margin-left: 10px;
+}

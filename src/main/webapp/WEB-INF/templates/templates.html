@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" th:href="@{/static/templates/templates.css}">
+    <link rel="stylesheet" th:href="@{/static/style.css}">
+    <script th:src="@{/static/templates/templates.js}"></script>
+    <!-- <link rel="stylesheet" href="../../static/templates/templates.css">
+    <link rel="stylesheet" href="../../static/style.css">
+    <script src="../../static/templates/templates.js"></script> -->
+    <title>Document</title>
+</head>
+<body>
+    <select class="select-template">
+        <option th:each="template : ${templates}" th:text="${template.name}">Шаблон 1</option>
+    </select>
+    <input type="button" value="Подтвердить"/><br>
+    <div th:each="template : ${templates}" class="template-flex-container">
+        <a class="template-href" th:href="@{/schedule/templates/{template.id}}">
+            <div th:text="${template.name}" th:data-id="${template.id}" class="template-box">
+                Шаблон 1
+            </div>
+        </a>
+        <input name="delete-button" th:data-id="${template.id}" type="button" value="&#10060;"/> 
+    </div>
+    <form action="#" th:action="@{/schedule/templates}" th:object="${newTemplate}" method="POST">
+        <legend>Создать новый шаблон</legend>
+        <input type="text" th:field="*{name}"/>
+        <input type="number" min="1" th:field="*{weekCount}"/><br>
+        <input type="date" th:field="*{startDate}"/><br>
+        <input type="submit" value="Создать"/>
+    </form>
+    <dialog class="confirmation-dialog">
+        <p class="confirmation-text"></p>
+        <input type="button" name="accept-button" value="Подтвердить"/>
+        <input type="button" name="cancel-button" value="Отмена"/>
+    </dialog>
+</body>
+</html>
