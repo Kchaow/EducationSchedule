@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
-    <link rel="stylesheet" th:href="@{/static/schedule.css}">
-    <script th:src="@{/static/schedule.js}"></script>
+    <link rel="stylesheet" th:href="@{/static/schedule/schedule.css}">
+    <script th:src="@{/static/schedule/schedule.js}"></script>
 </head>
 <body>
     <select name="group-select">
@@ -19,114 +19,15 @@
         <input class="next-button" type="button" value=">>"/>
     </div>
     <div class="schedule-container">
-        <div th:replace="~{scheduleDayFrag::scheduleDay('Понедельник')}"></div>
-        <div th:replace="~{scheduleDayFrag::scheduleDay('Вторник')}"></div>
-        <div th:replace="~{scheduleDayFrag::scheduleDay('Среда')}"></div>
-        <div th:replace="~{scheduleDayFrag::scheduleDay('Четверг')}"></div>
-        <div th:replace="~{scheduleDayFrag::scheduleDay('Пятница')}"></div>
-        <div th:replace="~{scheduleDayFrag::scheduleDay('Суббота')}"></div>
+        <div th:replace="~{ fragments/scheduleDayFrag::scheduleDay('Понедельник')}"></div>
+        <div th:replace="~{ fragments/scheduleDayFrag::scheduleDay('Вторник')}"></div>
+        <div th:replace="~{ fragments/scheduleDayFrag::scheduleDay('Среда')}"></div>
+        <div th:replace="~{ fragments/scheduleDayFrag::scheduleDay('Четверг')}"></div>
+        <div th:replace="~{ fragments/scheduleDayFrag::scheduleDay('Пятница')}"></div>
+        <div th:replace="~{ fragments/scheduleDayFrag::scheduleDay('Суббота')}"></div>
     </div>
-    <dic sec:authorize="hasAuthority('student')">
-        <!-- <div sec:authentication="principal.authorities.contains"> -->
+    <!-- <div sec:authorize="hasAuthority('student')">
         <p>Студент</p>
-    <!-- </div> -->
-    </dic>
-    <!-- <div sec:authentication="authorities.contains('student')">
-        <p>Студент</p>
-    </div> -->
-    <!-- <div class="schedule-container">
-        <div class="schedule-day">
-            <div class="schedule-stroke-container">
-                <div class="stroke-number text-middle">
-                    <p data-stroke-number>1.</p>
-                </div>
-                <div class="stroke-subject-teacher">
-                    <p data-subject-name></p>
-                    <p data-teacher></p>
-                </div>
-                <div class="stroke-status text-middle">
-                    <p data-stroke-status></p>
-                </div>
-                <div class="stroke-audience text-middle">
-                    <p data-stroke-audience></p>
-                </div>
-            </div>
-            <div class="schedule-stroke-container">
-                <div class="stroke-number text-middle">
-                    <p data-stroke-number>2.</p>
-                </div>
-                <div class="stroke-subject-teacher">
-                    <p data-subject-name></p>
-                    <p data-teacher></p>
-                </div>
-                <div class="stroke-status text-middle">
-                    <p data-stroke-status></p>
-                </div>
-                <div class="stroke-audience text-middle">
-                    <p data-stroke-audience></p>
-                </div>
-            </div>
-            <div class="schedule-stroke-container">
-                <div class="stroke-number text-middle">
-                    <p data-stroke-number>3.</p>
-                </div>
-                <div class="stroke-subject-teacher">
-                    <p data-subject-name></p>
-                    <p data-teacher></p>
-                </div>
-                <div class="stroke-status text-middle">
-                    <p data-stroke-status></p>
-                </div>
-                <div class="stroke-audience text-middle">
-                    <p data-stroke-audience></p>
-                </div>
-            </div>
-            <div class="schedule-stroke-container">
-                <div class="stroke-number text-middle">
-                    <p data-stroke-number>4.</p>
-                </div>
-                <div class="stroke-subject-teacher">
-                    <p data-subject-name></p>
-                    <p data-teacher></p>
-                </div>
-                <div class="stroke-status text-middle">
-                    <p data-stroke-status></p>
-                </div>
-                <div class="stroke-audience text-middle">
-                    <p data-stroke-audience></p>
-                </div>
-            </div>
-            <div class="schedule-stroke-container">
-                <div class="stroke-number text-middle">
-                    <p data-stroke-number>5.</p>
-                </div>
-                <div class="stroke-subject-teacher">
-                    <p data-subject-name></p>
-                    <p data-teacher></p>
-                </div>
-                <div class="stroke-status text-middle">
-                    <p data-stroke-status></p>
-                </div>
-                <div class="stroke-audience text-middle">
-                    <p data-stroke-audience></p>
-                </div>
-            </div>
-            <div class="schedule-stroke-container">
-                <div class="stroke-number text-middle">
-                    <p data-stroke-number>6.</p>
-                </div>
-                <div class="stroke-subject-teacher">
-                    <p data-subject-name></p>
-                    <p data-teacher></p>
-                </div>
-                <div class="stroke-status text-middle">
-                    <p data-stroke-status></p>
-                </div>
-                <div class="stroke-audience text-middle">
-                    <p data-stroke-audience></p>
-                </div>
-            </div>
-        </div>
     </div> -->
 </body>
 </html>

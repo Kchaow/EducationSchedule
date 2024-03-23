@@ -4,9 +4,10 @@ import lombok.Getter;
 import lombok.Setter;
 import org.letunov.dao.AttendanceDao;
 import org.letunov.dao.AttendanceStatusDao;
-import org.letunov.dao.EducationDayDao;
+import org.letunov.dao.ClassDao;
 import org.letunov.dao.UserDao;
 import org.letunov.domainModel.*;
+import org.letunov.domainModel.Class;
 import org.letunov.exceptions.TheDependentEntityIsPreservedBeforeTheIndependentEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
@@ -19,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.*;
 import java.time.DayOfWeek;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
@@ -28,29 +28,29 @@ import java.util.Objects;
 public class AttendanceDaoImpl implements AttendanceDao
 {
     private final JdbcTemplate jdbcTemplate;
-    private final EducationDayDao educationDayDao;
+    private final ClassDao aClassDao;
     private final UserDao userDao;
     private final AttendanceStatusDao attendanceStatusDao;
-    public AttendanceDaoImpl(JdbcTemplate jdbcTemplate, EducationDayDao educationDayDao, UserDao userDao, AttendanceStatusDao attendanceStatusDao)
+    public AttendanceDaoImpl(JdbcTemplate jdbcTemplate, ClassDao aClassDao, UserDao userDao, AttendanceStatusDao attendanceStatusDao)
     {
         this.jdbcTemplate = jdbcTemplate;
-        this.educationDayDao = educationDayDao;
+        this.aClassDao = aClassDao;
         this.attendanceStatusDao = attendanceStatusDao;
         this.userDao = userDao;
     }
     @Override
     @Transactional(readOnly = true)
-    public List<Attendance> findByStudentIdAndEducationDayId(long userId, long educationDayId)
+    public List<Attendance> findByStudentIdAndClassId(long userId, long classId)
     {
-        final String query = "SELECT id, attendance_status_id, user_id, education_day_id FROM attendance WHERE user_id = ? AND education_day_id = ?";
-        List<Attendance> attendances = jdbcTemplate.query(query, new AttendanceRowMapper(), userId, educationDayId);
+        final String query = "SELECT id, attendance_status_id, user_id, class_id FROM attendance WHERE user_id = ? AND class_id = ?";
+        List<Attendance> attendances = jdbcTemplate.query(query, new AttendanceRowMapper(), userId, classId);
         fillDependence(attendances);
         return attendances;
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Attendance findByEducationDayDayOfWeekAndWeekNumberAndEducationDaySubject(DayOfWeek dayOfWeek, int weekNumber, Subject subject)
+    public Attendance findByClassDayOfWeekAndWeekNumberAndClassSubject(DayOfWeek dayOfWeek, int weekNumber, Subject subject)
     {
         if (dayOfWeek == null)
             throw new NullPointerException("date arg cannot be null");
@@ -59,9 +59,9 @@ public class AttendanceDaoImpl implements AttendanceDao
         if (subject == null)
             throw new NullPointerException("subject arg cannot be null");
         final String query = """
-                SELECT att.id, attendance_status_id, att.user_id, education_day_id, day_of_week, subject_id, week_number
+                SELECT att.id, attendance_status_id, att.user_id, class_id, day_of_week, subject_id, week_number
                 FROM attendance att
-                LEFT JOIN education_day ed ON education_day_id = ed.id
+                LEFT JOIN class ed ON class_id = ed.id
                 WHERE day_of_week = ? AND week_number = ? AND subject_id = ?
                 """;
         List<Attendance> attendances = jdbcTemplate.query(query, new AttendanceRowMapper(), dayOfWeek.getValue(), weekNumber, subject.getId());
@@ -75,7 +75,7 @@ public class AttendanceDaoImpl implements AttendanceDao
     @Transactional(readOnly = true)
     public Attendance findById(long id)
     {
-        final String query = "SELECT id, attendance_status_id, user_id, education_day_id FROM attendance WHERE id = ?";
+        final String query = "SELECT id, attendance_status_id, user_id, class_id FROM attendance WHERE id = ?";
         List<Attendance> attendances = jdbcTemplate.query(query, new AttendanceRowMapper(), id);
         fillDependence(attendances);
         if (attendances.isEmpty())
@@ -97,23 +97,23 @@ public class AttendanceDaoImpl implements AttendanceDao
     {
         if (attendance == null)
             throw new NullPointerException("attendance cannot be null");
-        else if (attendance.getEducationDay() == null)
-            throw new NullPointerException("attendance educationDay cannot be null");
+        else if (attendance.getClazz() == null)
+            throw new NullPointerException("attendance class cannot be null");
         else if (attendance.getUser() == null)
             throw new NullPointerException("attendance educationDay cannot be null");
 
         if (userDao.findById(attendance.getUser().getId()) == null)
             throw new TheDependentEntityIsPreservedBeforeTheIndependentEntity("Trying to save a dependent attendance entity before an independent user entity");
-        if (educationDayDao.findById(attendance.getEducationDay().getId()) == null)
-            throw new TheDependentEntityIsPreservedBeforeTheIndependentEntity("Trying to save a dependent attendance entity before an independent education entity");
+        if (aClassDao.findById(attendance.getClazz().getId()) == null)
+            throw new TheDependentEntityIsPreservedBeforeTheIndependentEntity("Trying to save a dependent attendance entity before an independent class entity");
         if (attendance.getId() != 0 && findById(attendance.getId()) != null)
         {
-            final String query = "UPDATE attendance SET attendance_status_id = ?, user_id = ?, education_day_id = ? WHERE id = ?";
-            jdbcTemplate.update(query, attendance.getAttendanceStatus() == null ? null : attendance.getAttendanceStatus().getId(), attendance.getUser().getId(), attendance.getEducationDay().getId(), attendance.getId());
+            final String query = "UPDATE attendance SET attendance_status_id = ?, user_id = ?, class_id = ? WHERE id = ?";
+            jdbcTemplate.update(query, attendance.getAttendanceStatus() == null ? null : attendance.getAttendanceStatus().getId(), attendance.getUser().getId(), attendance.getClazz().getId(), attendance.getId());
             return findById(attendance.getId());
         }
         final String query = """
-                INSERT INTO attendance(attendance_status_id, user_id, education_day_id)
+                INSERT INTO attendance(attendance_status_id, user_id, class_id)
                 VALUES(?,?,?);
                 """;
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -135,8 +135,8 @@ public class AttendanceDaoImpl implements AttendanceDao
                 AttendanceStatus attendanceStatus = attendanceStatusDao.findById(attendance.getAttendanceStatus().getId());
                 attendance.setAttendanceStatus(attendanceStatus);
             }
-            EducationDay educationDay = educationDayDao.findById(attendance.getEducationDay().getId());
-            attendance.setEducationDay(educationDay);
+            Class clazz = aClassDao.findById(attendance.getClazz().getId());
+            attendance.setClazz(clazz);
         }
         return attendances;
     }
@@ -159,9 +159,9 @@ public class AttendanceDaoImpl implements AttendanceDao
             User user = new User();
             user.setId(rs.getLong("user_id"));
             attendance.setUser(user);
-            EducationDay educationDay = new EducationDay();
-            educationDay.setId(rs.getLong("education_day_id"));
-            attendance.setEducationDay(educationDay);
+            Class clazz = new Class();
+            clazz.setId(rs.getLong("class_id"));
+            attendance.setClazz(clazz);
             return attendance;
         }
     }
@@ -181,7 +181,7 @@ public class AttendanceDaoImpl implements AttendanceDao
             else
                 preparedStatement.setLong(1, attendance.getAttendanceStatus().getId());
             preparedStatement.setLong(2, attendance.getUser().getId());
-            preparedStatement.setLong(3, attendance.getEducationDay().getId());
+            preparedStatement.setLong(3, attendance.getClazz().getId());
             return preparedStatement;
         }
     }

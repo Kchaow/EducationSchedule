@@ -9,5 +9,5 @@ public class Attendance extends AbstractEntity
 {
     private AttendanceStatus attendanceStatus;
     private User user;
-    private EducationDay educationDay;
+    private Class clazz;
 }

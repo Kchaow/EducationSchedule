@@ -10,8 +10,8 @@ import java.util.List;
 
 public interface AttendanceDao
 {
-    List<Attendance> findByStudentIdAndEducationDayId(long userId, long educationDayId);
-    Attendance findByEducationDayDayOfWeekAndWeekNumberAndEducationDaySubject(DayOfWeek dayOfWeek, int weekNumber, Subject subject);
+    List<Attendance> findByStudentIdAndClassId(long userId, long classId);
+    Attendance findByClassDayOfWeekAndWeekNumberAndClassSubject(DayOfWeek dayOfWeek, int weekNumber, Subject subject);
     Attendance findById(long id);
     void deleteById(long id);
     Attendance save(Attendance attendance);

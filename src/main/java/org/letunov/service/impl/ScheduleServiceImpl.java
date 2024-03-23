@@ -1,28 +1,24 @@
 package org.letunov.service.impl;
 
 import lombok.Setter;
-import net.bytebuddy.asm.Advice;
-import org.letunov.dao.EducationDayDao;
+import org.letunov.dao.ClassDao;
 import org.letunov.dao.GroupDao;
+import org.letunov.dao.ScheduleTemplateDao;
 import org.letunov.dao.UserDao;
-import org.letunov.domainModel.EducationDay;
-import org.letunov.domainModel.Group;
-import org.letunov.domainModel.Subject;
-import org.letunov.domainModel.User;
+import org.letunov.domainModel.*;
+import org.letunov.domainModel.Class;
 import org.letunov.service.ScheduleService;
-import org.letunov.service.dto.EducationDayDto;
+import org.letunov.service.dto.ClassDto;
 import org.letunov.service.dto.ScheduleDto;
 import org.letunov.service.dto.SubjectDto;
 import org.letunov.service.dto.UserNamesDto;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.ui.Model;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -32,18 +28,16 @@ import java.util.*;
 @Service
 public class ScheduleServiceImpl implements ScheduleService
 {
-    @Setter
-    @Value("${schedule.educationDateStart}")
-    private LocalDate educationDateStart;
-
     private final GroupDao groupDao;
-    private final EducationDayDao educationDayDao;
+    private final ClassDao aClassDao;
     private final UserDao userDao;
-    public ScheduleServiceImpl(GroupDao groupDao, EducationDayDao educationDayDao, UserDao userDao)
+    private final ScheduleTemplateDao scheduleTemplateDao;
+    public ScheduleServiceImpl(GroupDao groupDao, ClassDao aClassDao, UserDao userDao, ScheduleTemplateDao scheduleTemplateDao)
     {
         this.groupDao = groupDao;
-        this.educationDayDao = educationDayDao;
+        this.aClassDao = aClassDao;
         this.userDao = userDao;
+        this.scheduleTemplateDao = scheduleTemplateDao;
     }
 
     @Override
@@ -52,17 +46,17 @@ public class ScheduleServiceImpl implements ScheduleService
         Group group = groupDao.findByName(groupName);
         if (group == null)
             throw new NoSuchElementException("%s group doesn't exist".formatted(groupName));
-        List<EducationDay> educationDays =
-                educationDayDao.findByWeekNumberAndGroupOrderByDayOfWeekAscClassNumberAsc(weekNumber, group);
+        List<Class> classes =
+                aClassDao.findByWeekNumberAndGroupOrderByDayOfWeekAscClassNumberAsc(weekNumber, group);
         ScheduleDto scheduleDto = new ScheduleDto();
         Map<Long, User> userMap = new HashMap<>();
-        List<EducationDayDto> educationDayDtoList = new LinkedList<>();
-        for (EducationDay educationDay : educationDays)
+        List<ClassDto> classesDto = new LinkedList<>();
+        for (Class clazz : classes)
         {
             UserNamesDto userNamesDto = null;
-            if (educationDay.getUser() != null)
+            if (clazz.getUser() != null)
             {
-                long id = educationDay.getUser().getId();
+                long id = clazz.getUser().getId();
                 User user = userMap.get(id);
                 if (user == null)
                 {
@@ -77,27 +71,28 @@ public class ScheduleServiceImpl implements ScheduleService
                         .build();
             }
             SubjectDto subjectDto = SubjectDto.builder()
-                    .id(educationDay.getSubject().getId())
-                    .name(educationDay.getSubject().getName())
+                    .id(clazz.getSubject().getId())
+                    .name(clazz.getSubject().getName())
                     .build();
             List<Long> groupsId = new ArrayList<>();
-            educationDay.getGroup().forEach((x) -> groupsId.add(x.getId()));
-            EducationDayDto educationDayDto = EducationDayDto.builder()
-                    .id(educationDay.getId())
+            clazz.getGroup().forEach((x) -> groupsId.add(x.getId()));
+            ClassDto educationDayDto = ClassDto.builder()
+                    .id(clazz.getId())
                     .userNamesDto(userNamesDto)
                     .groupsId(groupsId)
-                    .dayOfWeek(educationDay.getDayOfWeek().getValue())
-                    .classNumber(educationDay.getClassNumber())
-                    .audience(educationDay.getAudience())
-                    .weekNumber(educationDay.getWeekNumber())
+                    .dayOfWeek(clazz.getDayOfWeek().getValue())
+                    .classNumber(clazz.getClassNumber())
+                    .audience(clazz.getAudience())
+                    .weekNumber(clazz.getWeekNumber())
                     .subject(subjectDto)
                     .build();
-            educationDayDtoList.add(educationDayDto);
+            classesDto.add(educationDayDto);
         }
 
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
         List<String> dates = new LinkedList<>();
         int educationDayCount = 6;
+        LocalDate educationDateStart = aClassDao.findByWeekNumberAndGroupOrderByDayOfWeekAscClassNumberAsc(1, group).getFirst().getScheduleTemplate().getStartDate();
         for (int i = 0; i < educationDayCount; i++)
         {
             if (weekNumber == 1 && i + 1 < educationDateStart.getDayOfWeek().getValue())
@@ -117,11 +112,11 @@ public class ScheduleServiceImpl implements ScheduleService
             }
         }
         scheduleDto.setDates(dates);
-        scheduleDto.setClasses(educationDayDtoList);
+        scheduleDto.setClasses(classesDto);
 
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.setAccessControlAllowOrigin("*");
-        return new ResponseEntity<ScheduleDto>(scheduleDto, httpHeaders, HttpStatus.OK);
+//        HttpHeaders httpHeaders = new HttpHeaders();
+//        httpHeaders.setAccessControlAllowOrigin("*");
+        return new ResponseEntity<ScheduleDto>(scheduleDto, HttpStatus.OK);
     }
 
     @Transactional(isolation = Isolation.REPEATABLE_READ)
@@ -130,22 +125,22 @@ public class ScheduleServiceImpl implements ScheduleService
     {
         if (scheduleDto == null)
             throw new NullPointerException("scheduleDto arg cannot be null");
-        List<EducationDayDto> educationDayDtos = scheduleDto.getClasses();
-        for (EducationDayDto educationDayDto : educationDayDtos)
+        List<ClassDto> classesDtos = scheduleDto.getClasses();
+        for (ClassDto educationDayDto : classesDtos)
         {
-            EducationDay educationDay = new EducationDay();
-            educationDay.setId(educationDayDto.getId());
-            educationDay.setDayOfWeek(DayOfWeek.of(educationDayDto.getDayOfWeek()));
+            Class clazz = new Class();
+            clazz.setId(educationDayDto.getId());
+            clazz.setDayOfWeek(DayOfWeek.of(educationDayDto.getDayOfWeek()));
             Subject subject = new Subject();
             subject.setId(educationDayDto.getSubject().getId());
             subject.setName(educationDayDto.getSubject().getName());
-            educationDay.setSubject(subject);
-            educationDay.setAudience(educationDayDto.getAudience());
+            clazz.setSubject(subject);
+            clazz.setAudience(educationDayDto.getAudience());
             User user = new User();
             user.setId(educationDayDto.getId());
-            educationDay.setUser(user);
-            educationDay.setWeekNumber(educationDayDto.getWeekNumber());
-            educationDay.setClassNumber(educationDayDto.getClassNumber());
+            clazz.setUser(user);
+            clazz.setWeekNumber(educationDayDto.getWeekNumber());
+            clazz.setClassNumber(educationDayDto.getClassNumber());
             List<Group> groups = new ArrayList<>();
             for (Long id : educationDayDto.getGroupsId())
             {
@@ -153,9 +148,9 @@ public class ScheduleServiceImpl implements ScheduleService
                 group.setId(id);
                 groups.add(group);
             }
-            educationDay.setGroup(groups);
-            educationDay.setDayOfWeek(DayOfWeek.of(educationDayDto.getDayOfWeek()));
-            educationDayDao.save(educationDay);
+            clazz.setGroup(groups);
+            clazz.setDayOfWeek(DayOfWeek.of(educationDayDto.getDayOfWeek()));
+            aClassDao.save(clazz);
         }
         return ResponseEntity.ok().build();
     }

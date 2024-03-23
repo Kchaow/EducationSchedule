@@ -1,32 +1,27 @@
-package unit;
+package unit.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.Before;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.letunov.dao.EducationDayDao;
+import org.letunov.dao.ClassDao;
 import org.letunov.dao.GroupDao;
+import org.letunov.dao.ScheduleTemplateDao;
 import org.letunov.dao.UserDao;
 import org.letunov.domainModel.*;
-import org.letunov.service.ScheduleService;
-import org.letunov.service.dto.EducationDayDto;
+import org.letunov.domainModel.Class;
 import org.letunov.service.dto.ScheduleDto;
-import org.letunov.service.dto.SubjectDto;
-import org.letunov.service.dto.UserNamesDto;
 import org.letunov.service.impl.ScheduleServiceImpl;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatusCode;
+import unit.DomainObjectGenerator;
 
-import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -37,7 +32,9 @@ public class ScheduleServiceTest
     @Mock
     GroupDao groupDao;
     @Mock
-    EducationDayDao educationDayDao;
+    ClassDao aClassDao;
+    @Mock
+    ScheduleTemplateDao scheduleTemplateDao;
     @InjectMocks
     ScheduleServiceImpl scheduleService;
     DomainObjectGenerator domainObjectGenerator = new DomainObjectGenerator();
@@ -46,7 +43,6 @@ public class ScheduleServiceTest
     public void SetupEducationDateStart()
     {
         LocalDate localDate = LocalDate.of(2024, 3, 20);
-        scheduleService.setEducationDateStart(localDate);
     }
 
     @Test
@@ -54,19 +50,26 @@ public class ScheduleServiceTest
     {
         int weekNumber = 1;
         int educationDayCount = 6;
-        List<EducationDay> educationDayList = domainObjectGenerator.getEducationDayList(educationDayCount);
-        Group group = educationDayList.getFirst().getGroup().getFirst();
-        User user = educationDayList.getFirst().getUser();
+        List<Class> classList = domainObjectGenerator.getClassList(educationDayCount);
+        Group group = classList.getFirst().getGroup().getFirst();
+        User user = classList.getFirst().getUser();
         int groupClassNumber = 0;
-        for (EducationDay educationDay : educationDayList) {
-            if (educationDay.getGroup().contains(group))
+        for (Class clazz : classList) {
+            if (clazz.getGroup().contains(group))
                 groupClassNumber++;
         }
         final int classNumber = groupClassNumber;
 
         when(groupDao.findByName(anyString())).thenReturn(group);
-        when(educationDayDao.findByWeekNumberAndGroupOrderByDayOfWeekAscClassNumberAsc(weekNumber, group)).thenReturn(educationDayList);
+        when(aClassDao.findByWeekNumberAndGroupOrderByDayOfWeekAscClassNumberAsc(weekNumber, group)).thenReturn(classList);
         when(userDao.findById(anyLong())).thenReturn(user);
+        ScheduleTemplate scheduleTemplate = new ScheduleTemplate();
+        scheduleTemplate.setId(1);
+        scheduleTemplate.setActive(true);
+        scheduleTemplate.setWeekCount(16);
+        scheduleTemplate.setStartDate(LocalDate.of(2023, 3, 18));
+        scheduleTemplate.setName("first_template");
+        when(scheduleTemplateDao.findById(anyLong())).thenReturn(scheduleTemplate);
 
         assertAll(
                 () -> assertEquals(classNumber, Objects.requireNonNull(scheduleService.getGroupSchedule(weekNumber, group.getName()).getBody()).getClasses().size()),
@@ -85,10 +88,10 @@ public class ScheduleServiceTest
     @Test
     public void updateScheduleTestShouldReturnOk()
     {
-        when(educationDayDao.save(any(EducationDay.class))).thenReturn(any(EducationDay.class));
+        when(aClassDao.save(any(Class.class))).thenReturn(any(Class.class));
 
         int educationDayCount = 6;
-        ScheduleDto scheduleDto = domainObjectGenerator.convertToScheduleDto(domainObjectGenerator.getEducationDayList(educationDayCount));
+        ScheduleDto scheduleDto = domainObjectGenerator.convertToScheduleDto(domainObjectGenerator.getClassList(educationDayCount));
         assertEquals(HttpStatusCode.valueOf(200), scheduleService.updateSchedule(scheduleDto).getStatusCode());
     }
 

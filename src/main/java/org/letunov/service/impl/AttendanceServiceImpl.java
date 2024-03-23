@@ -20,9 +20,9 @@ public class AttendanceServiceImpl implements AttendanceService
     }
 
     @Override
-    public ResponseEntity<AttendanceDto> getAttendance(long studentId, long educationDayId)
+    public ResponseEntity<AttendanceDto> getAttendance(long studentId, long classId)
     {
-        Attendance attendance = attendanceDao.findByStudentIdAndEducationDayId(studentId, educationDayId).getFirst();
+        Attendance attendance = attendanceDao.findByStudentIdAndClassId(studentId, classId).getFirst();
         AttendanceDto attendanceDto = AttendanceDto.builder()
                 .id(attendance.getId())
                 .attendanceStatus(attendance.getAttendanceStatus() == null ? null : attendance.getAttendanceStatus().getName())

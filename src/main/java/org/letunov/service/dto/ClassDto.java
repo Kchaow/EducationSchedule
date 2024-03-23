@@ -14,7 +14,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class EducationDayDto
+public class ClassDto
 {
     private long id;
     private int weekNumber;

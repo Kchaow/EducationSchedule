@@ -69,10 +69,6 @@ async function getClasses()
                     status.querySelector('[data-stroke-status]').textContent = await getAttendanceStatus(userId, el.id);
                 }
         });
-    } 
-    else 
-    {
-        alert("Ошибка HTTP: " + response.status);
     }
 }
 
@@ -82,11 +78,13 @@ function clearStrokes()
     let teachers = document.querySelectorAll('[data-teacher]');
     let subjects = document.querySelectorAll('[data-subject-name]');
     let strokes = document.querySelectorAll('[data-stroke-audience]');
+    let statuses = document.querySelectorAll('[data-stroke-status]');
 
     teachers.forEach(el => el.textContent = "");
     subjects.forEach(el => el.textContent = "");
     strokes.forEach(el => el.textContent = "");
     dates.forEach(el => el.textContent = "");
+    statuses.forEach(el => el.textContent = "");
 }
 
 async function getAttendanceStatus(studentId, classId)

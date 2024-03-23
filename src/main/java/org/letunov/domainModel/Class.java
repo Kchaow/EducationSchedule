@@ -11,7 +11,7 @@ import java.util.Set;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class EducationDay extends AbstractEntity
+public class Class extends AbstractEntity
 {
     private int weekNumber;
     private User user;
@@ -20,4 +20,5 @@ public class EducationDay extends AbstractEntity
     private DayOfWeek dayOfWeek;
     private int classNumber;
     private int audience;
+    private ScheduleTemplate scheduleTemplate;
 }

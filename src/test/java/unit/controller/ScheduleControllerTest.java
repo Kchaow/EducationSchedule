@@ -1,4 +1,4 @@
-package unit;
+package unit.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,6 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import unit.DomainObjectGenerator;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -40,7 +41,7 @@ public class ScheduleControllerTest
     @Test
     public void getScheduleShouldReturnScheduleDto() throws Exception
     {
-        ScheduleDto scheduleDto = domainObjectGenerator.convertToScheduleDto(domainObjectGenerator.getEducationDayList(3));
+        ScheduleDto scheduleDto = domainObjectGenerator.convertToScheduleDto(domainObjectGenerator.getClassList(3));
         String groupName = "group";
         int weekNumber = 1;
         when(scheduleService.getGroupSchedule(weekNumber, groupName)).thenReturn(ResponseEntity.ok(scheduleDto));

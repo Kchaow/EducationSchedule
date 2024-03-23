@@ -124,7 +124,6 @@ public class GroupDaoImpl implements GroupDao
         };
         jdbcTemplate.update(preparedStatementCreator, keyHolder);
         return findById(Objects.requireNonNull(keyHolder.getKey()).longValue());
-
     }
 
     private static class GroupRowMapper implements RowMapper<Group>

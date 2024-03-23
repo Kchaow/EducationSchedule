@@ -40,8 +40,6 @@ public class AuthorizationController
         {
             long id = userDao.findByLogin(((UserDetails) authentication.getPrincipal()).getUsername()).getId();
             UserId userId = new UserId(id);
-//            HttpHeaders httpHeaders = new HttpHeaders();
-//            httpHeaders.setAccessControlAllowOrigin("*");
             return new ResponseEntity<UserId>(userId, HttpStatus.OK);
         }
         else
@@ -53,8 +51,7 @@ public class AuthorizationController
     @Getter
     @Setter
     @AllArgsConstructor
-    static
-    class UserId
+    static class UserId
     {
         private long id;
     }

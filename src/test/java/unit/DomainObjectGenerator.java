@@ -1,7 +1,10 @@
 package unit;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.letunov.domainModel.*;
-import org.letunov.service.dto.EducationDayDto;
+import org.letunov.domainModel.Class;
+import org.letunov.service.dto.ClassDto;
 import org.letunov.service.dto.ScheduleDto;
 import org.letunov.service.dto.SubjectDto;
 import org.letunov.service.dto.UserNamesDto;
@@ -11,43 +14,57 @@ import java.time.LocalDate;
 import java.util.*;
 
 //Сделать приемлемым
+@Setter
+@Getter
 public class DomainObjectGenerator
 {
-    public ScheduleDto convertToScheduleDto(List<EducationDay> educationDayList)
+    private ScheduleTemplate scheduleTemplate;
+
+    public DomainObjectGenerator()
+    {
+        scheduleTemplate = new ScheduleTemplate();
+        scheduleTemplate.setId(1);
+        scheduleTemplate.setName("first");
+        scheduleTemplate.setActive(true);
+        scheduleTemplate.setStartDate(LocalDate.now());
+        scheduleTemplate.setWeekCount(16);
+    }
+
+    public ScheduleDto convertToScheduleDto(List<Class> classList)
     {
         ScheduleDto scheduleDto = new ScheduleDto();
-        List<EducationDayDto> educationDayDtoList = new ArrayList<>();
-        for (EducationDay educationDay : educationDayList)
+        List<ClassDto> classDtoList = new ArrayList<>();
+        for (Class clazz : classList)
         {
             List<Long> groupIds = new ArrayList<>();
-            educationDay.getGroup().forEach(x -> groupIds.add(x.getId()));
+            clazz.getGroup().forEach(x -> groupIds.add(x.getId()));
             SubjectDto subjectDto = new SubjectDto();
-            subjectDto.setId(educationDay.getSubject().getId());
-            subjectDto.setName(educationDay.getSubject().getName());
+            subjectDto.setId(clazz.getSubject().getId());
+            subjectDto.setName(clazz.getSubject().getName());
             UserNamesDto userNamesDto = new UserNamesDto();
-            userNamesDto.setId(educationDay.getUser().getId());
-            userNamesDto.setFirstName(educationDay.getUser().getFirstName());
-            userNamesDto.setLastName(educationDay.getUser().getLastName());
-            userNamesDto.setMiddleName(educationDay.getUser().getMiddleName());
-            EducationDayDto educationDayDto = EducationDayDto.builder()
-                    .id(educationDay.getId())
+            userNamesDto.setId(clazz.getUser().getId());
+            userNamesDto.setFirstName(clazz.getUser().getFirstName());
+            userNamesDto.setLastName(clazz.getUser().getLastName());
+            userNamesDto.setMiddleName(clazz.getUser().getMiddleName());
+            ClassDto classDto = ClassDto.builder()
+                    .id(clazz.getId())
                     .userNamesDto(userNamesDto)
                     .subject(subjectDto)
-                    .audience(educationDay.getAudience())
-                    .classNumber(educationDay.getClassNumber())
+                    .audience(clazz.getAudience())
+                    .classNumber(clazz.getClassNumber())
                     .groupsId(groupIds)
-                    .dayOfWeek(educationDay.getDayOfWeek().getValue())
-                    .weekNumber(educationDay.getWeekNumber())
+                    .dayOfWeek(clazz.getDayOfWeek().getValue())
+                    .weekNumber(clazz.getWeekNumber())
                     .build();
-            educationDayDtoList.add(educationDayDto);
+            classDtoList.add(classDto);
         }
-        scheduleDto.setClasses(educationDayDtoList);
+        scheduleDto.setClasses(classDtoList);
         return scheduleDto;
     }
 
-    public List<EducationDay> getEducationDayList(int size)
+    public List<Class> getClassList(int size)
     {
-        List<EducationDay> educationDayList = new ArrayList<>();
+        List<Class> classList = new ArrayList<>();
 
         final int maxClassNumber = 6;
         final Map<Integer, String> firstNames = getFirstName();
@@ -106,16 +123,18 @@ public class DomainObjectGenerator
                 user.setLogin(lastNames.get(userId));
                 user.setRole(role);
 
-                EducationDay educationDay = new EducationDay();
-                educationDay.setId(i);
-                educationDay.setAudience(audience);
-                educationDay.setClassNumber(classNumber);
-                educationDay.setDayOfWeek(DayOfWeek.of(dayOfWeek));
-                educationDay.setWeekNumber(weekNumber);
-                educationDay.setSubject(subject);
-                educationDay.setUser(user);
-                educationDay.setGroup(educationDayGroups);
-                educationDayList.add(educationDay);
+
+                Class clazz = new Class();
+                clazz.setId(i);
+                clazz.setAudience(audience);
+                clazz.setClassNumber(classNumber);
+                clazz.setDayOfWeek(DayOfWeek.of(dayOfWeek));
+                clazz.setWeekNumber(weekNumber);
+                clazz.setSubject(subject);
+                clazz.setUser(user);
+                clazz.setGroup(educationDayGroups);
+                clazz.setScheduleTemplate(scheduleTemplate);
+                classList.add(clazz);
 
                 classNumber++;
                 totalClassNumberAtDay--;
@@ -123,72 +142,7 @@ public class DomainObjectGenerator
             dayOfWeek++;
         }
 
-        return educationDayList;
-
-
-
-
-
-//        List<EducationDay> educationDayList = new ArrayList<>();
-//
-//        Role role = new Role();
-//        role.setId(3);
-//        role.setName("teacher");
-//
-//        User user = new User();
-//        user.setId(2);
-//        user.setFirstName("firstName");
-//        user.setLastName("lastName");
-//        user.setMiddleName("middleName");
-//        user.setLogin("login");
-//        user.setEmail("email");
-//        user.setPassword("password");
-//        user.setGroup(null);
-//        user.setRole(role);
-//
-//        Group group = new Group();
-//        group.setId(1);
-//        group.setName("group");
-//        List<Group> groups = new ArrayList<>();
-//        groups.add(group);
-//
-//        int weekNumber = 1;
-//        int maxClass = 6;
-//
-//        Subject subject1 = new Subject();
-//        subject1.setId(1);
-//        subject1.setName("firstSubject");
-//
-//        Subject subject2 = new Subject();
-//        subject2.setId(2);
-//        subject2.setName("secondSubject");
-//
-//        LocalDate date = LocalDate.of(2024, 3, 4);
-//        for (int i = 0, classNumber = 0; i < size; i++, classNumber++)
-//        {
-//            if (date.getDayOfWeek() == DayOfWeek.SUNDAY)
-//            {
-//                weekNumber++;
-//                date = date.plusDays(1);
-//            }
-//            if (classNumber > maxClass)
-//                classNumber = 1;
-//            EducationDay educationDay = new EducationDay();
-//            educationDay.setId(i+1);
-//            educationDay.setWeekNumber(weekNumber);
-//            educationDay.setDate(date);
-//            educationDay.setUser(user);
-//            educationDay.setAudience(255 + i);
-//            educationDay.setClassNumber(classNumber);
-//            educationDay.setGroup(groups);
-//            if (i % 2 == 0)
-//                educationDay.setSubject(subject1);
-//            else
-//                educationDay.setSubject(subject2);
-//            date = date.plusDays(1);
-//            educationDayList.add(educationDay);
-//        }
-//        return educationDayList;
+        return classList;
     }
 
     private Map<Integer, String> getFirstName()

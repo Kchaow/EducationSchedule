@@ -2,12 +2,13 @@ package integration;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import org.letunov.dao.*;
+import org.letunov.dao.ClassDao;
 import org.letunov.dao.impl.*;
 import org.letunov.domainModel.*;
+import org.letunov.domainModel.Class;
 import org.letunov.exceptions.TheDependentEntityIsPreservedBeforeTheIndependentEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -35,7 +36,8 @@ public class DaoTest
     private UserDao userDao;
     private GroupDao groupDao;
     private SubjectDao subjectDao;
-    private EducationDayDao educationDayDao;
+    private ClassDao aClassDao;
+    private ScheduleTemplateDao scheduleTemplateDao;
     private AttendanceDao attendanceDao;
     private final String databaseName = "schedule";
     private final String password = "postgres";
@@ -53,7 +55,7 @@ public class DaoTest
     public void setUpDataSource() throws ClassNotFoundException {
         SimpleDriverDataSource dataSource = new SimpleDriverDataSource();
         @SuppressWarnings("unchecked")
-        Class<? extends Driver> driver = (Class<? extends Driver>) Class.forName(postgres.getDriverClassName());
+        java.lang.Class<? extends Driver> driver = (java.lang.Class<? extends Driver>) java.lang.Class.forName(postgres.getDriverClassName());
         dataSource.setDriverClass(driver);
         dataSource.setUrl(postgres.getJdbcUrl());
         dataSource.setUsername(postgres.getUsername());
@@ -64,8 +66,9 @@ public class DaoTest
         groupDao = new GroupDaoImpl(jdbcTemplate);
         userDao = new UserDaoImpl(jdbcTemplate, groupDao, roleDao);
         subjectDao = new SubjectDaoImpl(jdbcTemplate);
-        educationDayDao = new EducationDayDaoImpl(jdbcTemplate, userDao, subjectDao, groupDao);
-        attendanceDao = new AttendanceDaoImpl(jdbcTemplate, educationDayDao, userDao, attendanceStatusDao);
+        scheduleTemplateDao = new ScheduleTemplateDaoImpl(jdbcTemplate);
+        aClassDao = new ClassDaoImpl(jdbcTemplate, userDao, subjectDao, groupDao, scheduleTemplateDao);
+        attendanceDao = new AttendanceDaoImpl(jdbcTemplate, aClassDao, userDao, attendanceStatusDao);
     }
 
     @Test
@@ -331,102 +334,146 @@ public class DaoTest
     }
 
     @Test
-    public void EducationDayFindByWeekNumberOrderByDateAscClassNumberAsc()
+    public void ClassFindByWeekNumberOrderByDateAscClassNumberAsc()
     {
-        List<EducationDay> educationDayList = educationDayDao.findByWeekNumberOrderByDayOfWeekAscClassNumberAsc(1);
+        List<Class> classList = aClassDao.findByWeekNumberOrderByDayOfWeekAscClassNumberAsc(1);
         assertAll(
-                () -> assertEquals(6, educationDayList.size()),
-                () -> assertEquals(2, educationDayList.getFirst().getGroup().size()),
-                () -> assertEquals("Крылов", educationDayList.getFirst().getUser().getFirstName())
+                () -> assertEquals(6, classList.size()),
+                () -> assertEquals(2, classList.getFirst().getGroup().size()),
+                () -> assertEquals("Крылов", classList.getFirst().getUser().getFirstName())
         );
     }
 
     @Test
-    public void EducationDayFindByWeekNumberAndTeacherOrderByDateAscClassNumberAsc()
+    public void ClassFindByWeekNumberOrderByDateAscClassNumberAscScheduleTemplate()
+    {
+        ScheduleTemplate scheduleTemplate = new ScheduleTemplate();
+        scheduleTemplate.setId(1);
+        List<Class> classList = aClassDao.findByWeekNumberOrderByDayOfWeekAscClassNumberAsc(1, scheduleTemplate);
+
+        assertAll(
+                () -> assertEquals(6, classList.size()),
+                () -> assertEquals(2, classList.getFirst().getGroup().size()),
+                () -> assertEquals("Крылов", classList.getFirst().getUser().getFirstName())
+        );
+    }
+
+    @Test
+    public void ClassFindByWeekNumberAndTeacherOrderByDateAscClassNumberAsc()
     {
         User user = userDao.findById(2);
-        List<EducationDay> educationDayList = educationDayDao.findByWeekNumberAndTeacherOrderByDayOfWeekAscClassNumberAsc(1, user);
+        List<Class> classList = aClassDao.findByWeekNumberAndTeacherOrderByDayOfWeekAscClassNumberAsc(1, user);
         assertAll(
-                () -> assertEquals(4, educationDayList.size()),
-                () -> assertEquals(2, educationDayList.getFirst().getGroup().size()),
-                () -> assertEquals("Крылов", educationDayList.getFirst().getUser().getFirstName())
+                () -> assertEquals(4, classList.size()),
+                () -> assertEquals(2, classList.getFirst().getGroup().size()),
+                () -> assertEquals("Крылов", classList.getFirst().getUser().getFirstName())
         );
     }
 
     @Test
-    public void EducationDayFindByWeekNumberAndGroupOrderByDateAscClassNumberAsc()
+    public void ClassFindByWeekNumberAndTeacherOrderByDayOfWeekAscClassNumberAscScheduleTemplate()
+    {
+        User user = userDao.findById(2);
+        ScheduleTemplate scheduleTemplate = new ScheduleTemplate();
+        scheduleTemplate.setId(1);
+        List<Class> classList = aClassDao.findByWeekNumberAndTeacherOrderByDayOfWeekAscClassNumberAsc(1, user, scheduleTemplate);
+        assertAll(
+                () -> assertEquals(4, classList.size()),
+                () -> assertEquals(2, classList.getFirst().getGroup().size()),
+                () -> assertEquals("Крылов", classList.getFirst().getUser().getFirstName())
+        );
+    }
+
+    @Test
+    public void ClassFindByWeekNumberAndGroupOrderByDateAscClassNumberAsc()
     {
         Group group = groupDao.findById(1);
-        List<EducationDay> educationDayList = educationDayDao.findByWeekNumberAndGroupOrderByDayOfWeekAscClassNumberAsc(1, group);
+        List<Class> classList = aClassDao.findByWeekNumberAndGroupOrderByDayOfWeekAscClassNumberAsc(1, group);
         assertAll(
-                () -> assertEquals(2, educationDayList.size()),
-                () -> assertEquals(2, educationDayList.getFirst().getGroup().size()),
-                () -> assertEquals("Крылов", educationDayList.getFirst().getUser().getFirstName())
+                () -> assertEquals(2, classList.size()),
+                () -> assertEquals(2, classList.getFirst().getGroup().size()),
+                () -> assertEquals("Крылов", classList.getFirst().getUser().getFirstName())
         );
     }
 
     @Test
-    public void EducationDayFindById()
+    public void ClassFindByWeekNumberAndGroupOrderByDateAscClassNumberAscScheduleTemplate()
     {
-        EducationDay educationDay = educationDayDao.findById(1);
+        Group group = groupDao.findById(1);
+        ScheduleTemplate scheduleTemplate = new ScheduleTemplate();
+        scheduleTemplate.setId(1);
+        List<Class> classList = aClassDao.findByWeekNumberAndGroupOrderByDayOfWeekAscClassNumberAsc(1, group, scheduleTemplate);
         assertAll(
-                () -> assertNotNull(educationDay),
-                () -> assertEquals(2, educationDay.getGroup().size()),
-                () -> assertEquals("Крылов", educationDay.getUser().getFirstName())
+                () -> assertEquals(2, classList.size()),
+                () -> assertEquals(2, classList.getFirst().getGroup().size()),
+                () -> assertEquals("Крылов", classList.getFirst().getUser().getFirstName())
         );
     }
 
     @Test
-    public void EducationDayDeleteById()
+    public void ClassFindById()
     {
-        long educationDayId = 1;
-        educationDayDao.deleteById(educationDayId);
-        assertNull(educationDayDao.findById(educationDayId));
+        Class clazz = aClassDao.findById(1);
+        assertAll(
+                () -> assertNotNull(clazz),
+                () -> assertEquals(2, clazz.getGroup().size()),
+                () -> assertEquals("Крылов", clazz.getUser().getFirstName())
+        );
     }
 
     @Test
-    public void EducationDaySave()
+    public void ClassDeleteById()
+    {
+        long classId = 1;
+        aClassDao.deleteById(classId);
+        assertNull(aClassDao.findById(classId));
+    }
+
+    @Test
+    public void ClassSave()
     {
         List<Group> groupList = groupDao.findAllOrderByNameAsc(10, 0).getContent();
         User user = userDao.findById(1);
         Subject subject = subjectDao.findById(1);
-        EducationDay educationDay = new EducationDay();
-        educationDay.setWeekNumber(1);
-        educationDay.setClassNumber(3);
-        educationDay.setDayOfWeek(DayOfWeek.MONDAY);
-        educationDay.setAudience(256);
-        educationDay.setUser(user);
-        educationDay.setSubject(subject);
-        educationDay.setGroup(groupList);
-        educationDayDao.save(educationDay);
+        ScheduleTemplate scheduleTemplate = scheduleTemplateDao.findById(1);
+        Class clazz = new Class();
+        clazz.setWeekNumber(1);
+        clazz.setClassNumber(3);
+        clazz.setDayOfWeek(DayOfWeek.MONDAY);
+        clazz.setAudience(256);
+        clazz.setUser(user);
+        clazz.setScheduleTemplate(scheduleTemplate);
+        clazz.setSubject(subject);
+        clazz.setGroup(groupList);
+        aClassDao.save(clazz);
 
         long id = 1;
-        EducationDay oldEducationDay = educationDayDao.findById(id);
-        oldEducationDay.getGroup().removeFirst();
-        oldEducationDay.setAudience(234);
-        educationDayDao.save(oldEducationDay);
+        Class oldClass = aClassDao.findById(id);
+        oldClass.getGroup().removeFirst();
+        oldClass.setAudience(234);
+        aClassDao.save(oldClass);
 
 
         assertAll(
-                () -> assertEquals(7, educationDayDao.findByWeekNumberOrderByDayOfWeekAscClassNumberAsc(1).size()),
-                () -> assertEquals(1, educationDayDao.findById(id).getGroup().size())
+                () -> assertEquals(7, aClassDao.findByWeekNumberOrderByDayOfWeekAscClassNumberAsc(1).size()),
+                () -> assertEquals(1, aClassDao.findById(id).getGroup().size())
         );
     }
 
     @Test
-    public void AttendanceFindByStudentIdAndEducationDayId()
+    public void AttendanceFindByStudentIdAndClassId()
     {
-        assertEquals(1, attendanceDao.findByStudentIdAndEducationDayId(4, 2).size());
+        assertEquals(1, attendanceDao.findByStudentIdAndClassId(4, 2).size());
     }
 
     @Test
     public void AttendanceFindByEducationDayDateAndEducationDaySubject()
     {
         Subject subject = subjectDao.findById(1);
-        Attendance attendance = attendanceDao.findByEducationDayDayOfWeekAndWeekNumberAndEducationDaySubject(DayOfWeek.MONDAY, 1, subject);
+        Attendance attendance = attendanceDao.findByClassDayOfWeekAndWeekNumberAndClassSubject(DayOfWeek.MONDAY, 1, subject);
         assertAll(
                 () -> assertNotNull(attendance),
-                () -> assertEquals(2, attendance.getEducationDay().getGroup().size())
+                () -> assertEquals(2, attendance.getClazz().getGroup().size())
         );
     }
 
@@ -451,11 +498,11 @@ public class DaoTest
         long userId = 4;
         User user = userDao.findById(userId);
         AttendanceStatus attendanceStatus = attendanceStatusDao.findById(1);
-        EducationDay educationDay = educationDayDao.findById(1);
+        Class clazz = aClassDao.findById(1);
         Attendance attendance = new Attendance();
         attendance.setAttendanceStatus(attendanceStatus);
         attendance.setUser(user);
-        attendance.setEducationDay(educationDay);
+        attendance.setClazz(clazz);
 
         AttendanceStatus attendanceStatus1 = attendanceStatusDao.findById(3);
         Attendance oldAttendance = attendanceDao.findById(2);
@@ -465,5 +512,41 @@ public class DaoTest
                 () -> assertEquals(4, attendanceDao.save(attendance).getUser().getId()),
                 () -> assertEquals(3, attendanceDao.save(oldAttendance).getAttendanceStatus().getId())
         );
+    }
+
+    @Test
+    public void ScheduleTemplateFindAll()
+    {
+        assertEquals(1, scheduleTemplateDao.findAll().size());
+    }
+
+    @Test
+    public void ScheduleTemplateFindById()
+    {
+        assertEquals("first_template" ,scheduleTemplateDao.findById(1).getName());
+    }
+
+    @Test
+    public void ScheduleTemplateFindByName()
+    {
+        assertEquals(1 ,scheduleTemplateDao.findByName("first_template").getId());
+    }
+
+    @Test
+    public void ScheduleTemplateSave()
+    {
+        ScheduleTemplate scheduleTemplate = new ScheduleTemplate();
+        String name = "second_template";
+        scheduleTemplate.setName(name);
+        scheduleTemplate.setWeekCount(16);
+        scheduleTemplate.setStartDate(LocalDate.now());
+        scheduleTemplateDao.save(scheduleTemplate);
+        assertNotNull(scheduleTemplateDao.findByName(name));
+    }
+
+    @Test
+    public void ScheduleTemplateDeleteById()
+    {
+        assertEquals("first_template", scheduleTemplateDao.findById(1).getName());
     }
 }

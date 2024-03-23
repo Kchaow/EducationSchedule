@@ -1,6 +1,5 @@
 package org.letunov;
 
-import org.letunov.filter.PostAuthorizationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.ObjectPostProcessor;
@@ -13,6 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
@@ -23,13 +23,6 @@ import javax.sql.DataSource;
 //@EnableMethodSecurity
 public class SecurityConfig
 {
-    private final PostAuthorizationFilter postAuthorizationFilter;
-    private DataSource dataSource;
-    public SecurityConfig(DataSource dataSource, PostAuthorizationFilter postAuthorizationFilter)
-    {
-        this.dataSource = dataSource;
-        this.postAuthorizationFilter = postAuthorizationFilter;
-    }
 
     //https://codingtim.github.io/spring-security-6-1-2-requestmatchers/
     @Bean
@@ -44,14 +37,15 @@ public class SecurityConfig
                 .logout(httpSecurityLogoutConfigurer -> httpSecurityLogoutConfigurer
                         .logoutUrl("/exit")
                         .permitAll()
-                        .clearAuthentication(true)
-                        .deleteCookies("userId"))
+                        .clearAuthentication(true))
                 .formLogin((formLogin) -> formLogin
                         .usernameParameter("username")
                         .passwordParameter("password")
                         .loginPage("/login")
                         .loginProcessingUrl("/login")
                         .defaultSuccessUrl("/schedule")
+                        //https://www.baeldung.com/spring-security-redirect-login
+                        .successHandler(new SimpleUrlAuthenticationSuccessHandler())
                         .permitAll())
                 .csrf(AbstractHttpConfigurer::disable); //Исправить!
         return http.build();
