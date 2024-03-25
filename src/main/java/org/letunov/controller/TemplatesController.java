@@ -41,4 +41,11 @@ public class TemplatesController
         scheduleTemplateService.deleteScheduleTemplate(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PutMapping
+    public ResponseEntity<Object> makeTemplateActive(@RequestParam("templateName") String templateName)
+    {
+        scheduleTemplateService.makeTemplateActive(templateName);
+        return ResponseEntity.noContent().build();
+    }
 }

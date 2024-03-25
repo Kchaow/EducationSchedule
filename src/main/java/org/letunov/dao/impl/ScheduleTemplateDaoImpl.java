@@ -69,6 +69,21 @@ public class ScheduleTemplateDaoImpl implements ScheduleTemplateDao
         }
     }
 
+    @Transactional(readOnly = true)
+    @Override
+    public List<ScheduleTemplate> findByIsActive(boolean isActive)
+    {
+        final String query = "SELECT id, name, start_date, week_count, is_active FROM schedule_template WHERE is_active = ?";
+        try
+        {
+            return jdbcTemplate.query(query, new ScheduleTemplateRowMapper(), isActive);
+        }
+        catch (EmptyResultDataAccessException e)
+        {
+            return null;
+        }
+    }
+
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     @Override
     public ScheduleTemplate save(ScheduleTemplate templateSchedule)

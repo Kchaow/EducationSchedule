@@ -13,9 +13,11 @@
 </head>
 <body>
     <select class="select-template">
-        <option th:each="template : ${templates}" th:text="${template.name}">Шаблон 1</option>
+        <option>Не выбран</option>
+        <option th:each="template : ${templates}" th:text="${template.name}" th:selected="${template.isActive}">Шаблон 1</option>
     </select>
-    <input type="button" value="Подтвердить"/><br>
+    <input class="set-active-button" type="button" value="Подтвердить"/><br>
+    <p class="select-template-status" ></p>
     <div th:each="template : ${templates}" class="template-flex-container">
         <a class="template-href" th:href="@{/schedule/templates/{template.id}}">
             <div th:text="${template.name}" th:data-id="${template.id}" class="template-box">

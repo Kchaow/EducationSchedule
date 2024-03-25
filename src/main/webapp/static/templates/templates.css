@@ -17,3 +17,8 @@ input[name="delete-button"]
 {
     margin-left: 10px;
 }
+
+.select-template-status
+{
+    display: none;
+}

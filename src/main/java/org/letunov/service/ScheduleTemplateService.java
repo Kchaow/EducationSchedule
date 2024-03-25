@@ -11,4 +11,6 @@ public interface ScheduleTemplateService
 
     void addNewScheduleTemplate(ScheduleTemplate scheduleTemplate);
     void deleteScheduleTemplate(long id);
+
+    void makeTemplateActive(String templateName);
 }
