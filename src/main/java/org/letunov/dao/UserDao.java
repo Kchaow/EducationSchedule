@@ -8,10 +8,10 @@ import java.util.List;
 public interface UserDao
 {
     User findById(long id);
-    Page<User> findByRole(String role, int limit, int offset);
-    Page<User> findByFirstNameOrderByFirstName(String firstName, int limit, int offset);
-    Page<User> findByLastNameOrderByLastName(String lastName, int limit, int offset);
-    Page<User> findByMiddleNameOrderByMiddleName(String middleName, int limit, int offset);
+    List<User> findByRole(String role);
+    List<User> findByFirstNameOrderByFirstName(String firstName);
+    List<User> findByLastNameOrderByLastName(String lastName);
+    List<User> findByMiddleNameOrderByMiddleName(String middleName);
     User findByLogin(String login);
     User findByEmail(String email);
     void deleteById(long id);

@@ -1,0 +1,38 @@
+<div th:fragment="scheduleStrokeContainer(number)" class="schedule-stroke-container" th:data-stroke-number="${number}">
+    <div class="stroke-number text-middle">
+        <p th:text="${number} + '.'" p>1.</p>
+    </div>
+    <div class="stroke-subject-teacher">
+        <div>
+            <select class="subject-select subject-teacher-select" disabled>
+                <option value="default">Пары нет</option>
+                <option th:each="subject : ${subjects}" th:value="${subject.id}" th:text="${subject.name}"></option>
+            </select>
+            <br>
+            <select class="teacher-select subject-teacher-select" disabled>
+                <option value="default">Преподавателя нет</option>
+                <option th:each="teacher : ${teachers}" th:value="${teacher.id}" th:text="${teacher.lastName} + ' ' + ${teacher.firstName} + ' ' + ${teacher.middleName}"></option>
+            </select>
+        </div>
+        <!-- <p data-subject-name></p>
+        <p data-teacher></p> -->
+    </div>
+    <!-- <div class="stroke-status text-middle">
+        <p data-stroke-status></p>
+    </div> -->
+    <div class="stroke-audience text-middle">
+        <input type="number" class="audience-input" disabled/>
+        <!-- <p data-stroke-audience></p> -->
+    </div>
+</div>
+
+<div th:fragment="scheduleDay(weekDay)" class="schedule-day">
+    <p th:text="${weekDay}">Понедельник</p>
+    <p class="date"></p>
+    <div th:replace="~{::scheduleStrokeContainer('1')}"></div>
+    <div th:replace="~{::scheduleStrokeContainer('2')}"></div>
+    <div th:replace="~{::scheduleStrokeContainer('3')}"></div>
+    <div th:replace="~{::scheduleStrokeContainer('4')}"></div>
+    <div th:replace="~{::scheduleStrokeContainer('5')}"></div>
+    <div th:replace="~{::scheduleStrokeContainer('6')}"></div>
+</div>

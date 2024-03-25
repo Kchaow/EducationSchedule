@@ -226,19 +226,19 @@ public class DaoTest
     @Test
     public void UserFindByFirstNameOrderByFirstName()
     {
-        assertEquals(1, userDao.findByFirstNameOrderByFirstName("Тихонова", 10, 0).getContent().getFirst().getId());
+        assertEquals(1, userDao.findByFirstNameOrderByFirstName("Тихонова").getFirst().getId());
     }
 
     @Test
     public void UserFindByLastNameOrderByLastName()
     {
-        assertEquals(3, userDao.findByLastNameOrderByLastName("Лука", 10, 0).getContent().getFirst().getId());
+        assertEquals(3, userDao.findByLastNameOrderByLastName("Лука").getFirst().getId());
     }
 
     @Test
     public void UserFindByMiddleNameOrderByMiddleName()
     {
-        assertEquals(6, userDao.findByMiddleNameOrderByMiddleName("Игоревна", 10, 0).getContent().getFirst().getId());
+        assertEquals(6, userDao.findByMiddleNameOrderByMiddleName("Игоревна").getFirst().getId());
     }
 
     @Test
@@ -273,7 +273,7 @@ public class DaoTest
     @Test
     public void UserFindByRoleTest()
     {
-        assertEquals(6, userDao.findByRole("student", 10, 0).getContent().size());
+        assertEquals(6, userDao.findByRole("student").size());
     }
 
     @Test
@@ -299,8 +299,8 @@ public class DaoTest
 
         userDao.saveAll(users);
         assertAll(
-                () -> assertEquals(16, userDao.findByRole("student", 200, 0).getTotalElements()),
-                () -> assertNotNull(userDao.findByFirstNameOrderByFirstName("newName", 10, 0))
+                () -> assertEquals(16, userDao.findByRole("student").size()),
+                () -> assertNotNull(userDao.findByFirstNameOrderByFirstName("newName"))
         );
     }
 
@@ -517,7 +517,7 @@ public class DaoTest
     @Test
     public void ScheduleTemplateFindAll()
     {
-        assertEquals(1, scheduleTemplateDao.findAll().size());
+        assertEquals(4, scheduleTemplateDao.findAll().size());
     }
 
     @Test
@@ -536,7 +536,7 @@ public class DaoTest
     public void ScheduleTemplateSave()
     {
         ScheduleTemplate scheduleTemplate = new ScheduleTemplate();
-        String name = "second_template";
+        String name = "new_template";
         scheduleTemplate.setName(name);
         scheduleTemplate.setWeekCount(16);
         scheduleTemplate.setStartDate(LocalDate.now());

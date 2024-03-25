@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" th:href="@{/static/template/template.css}">
+    <link rel="stylesheet" th:href="@{/static/style.css}">
+    <script th:src="@{/static/template/template.js}"></script>
+    <title>Document</title>
+</head>
+<body>
+    <select name="group-select">
+        <option value="default">Группа</option>
+        <option th:each="group : ${groups}" th:value="${group}" th:text="${group}"></option>
+    </select>
+    <div class="week-number-select-container">
+        <input class="prev-button" type="button" value="<<"/>
+        <div class="text-middle">
+            <p class="current-week-number">1</p>
+        </div>
+        <input class="next-button" type="button" value=">>"/>
+    </div>
+    <div class="schedule-container">
+        <div th:replace="~{ fragments/scheduleDayTemplateFrag::scheduleDay('Понедельник')}"></div>
+        <div th:replace="~{ fragments/scheduleDayTemplateFrag::scheduleDay('Вторник')}"></div>
+        <div th:replace="~{ fragments/scheduleDayTemplateFrag::scheduleDay('Среда')}"></div>
+        <div th:replace="~{ fragments/scheduleDayTemplateFrag::scheduleDay('Четверг')}"></div>
+        <div th:replace="~{ fragments/scheduleDayTemplateFrag::scheduleDay('Пятница')}"></div>
+        <div th:replace="~{ fragments/scheduleDayTemplateFrag::scheduleDay('Суббота')}"></div>
+    </div>
+</body>
+</html>

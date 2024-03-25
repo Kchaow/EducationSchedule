@@ -61,7 +61,7 @@ public class UserDaoImpl implements UserDao
 
     @Override
     @Transactional(readOnly = true)
-    public Page<User> findByRole(String role, int limit, int offset)
+    public List<User> findByRole(String role)
     {
         if (role == null)
             throw new NullPointerException("role arg cannot be null");
@@ -70,12 +70,11 @@ public class UserDaoImpl implements UserDao
                 FROM "user" u
                 LEFT JOIN "group" gr ON u.group_id = gr.id
                 LEFT JOIN role r ON u.role_id = r.id
-                WHERE r.name = ?
-                LIMIT ? OFFSET ?;
+                WHERE r.name = ?;
                 """;
         try
         {
-            return new PageImpl<>(jdbcTemplate.query(query, new UserRowMapper(), role, limit, offset));
+            return jdbcTemplate.query(query, new UserRowMapper(), role);
         }
         catch (EmptyResultDataAccessException e) {
             return null;
@@ -84,7 +83,7 @@ public class UserDaoImpl implements UserDao
 
     @Override
     @Transactional(readOnly = true)
-    public Page<User> findByFirstNameOrderByFirstName(String firstName,int limit,int offset)
+    public List<User> findByFirstNameOrderByFirstName(String firstName)
     {
         if (firstName == null)
             throw new NullPointerException("firstName arg cannot be null");
@@ -94,12 +93,11 @@ public class UserDaoImpl implements UserDao
                 LEFT JOIN "group" gr ON u.group_id = gr.id
                 LEFT JOIN role r ON u.role_id = r.id
                 WHERE u.first_name = ?
-                ORDER BY u.first_name
-                LIMIT ? OFFSET ?;
+                ORDER BY u.first_name;
                 """;
         try
         {
-            return new PageImpl<>(jdbcTemplate.query(query, new UserRowMapper(), firstName, limit, offset));
+            return jdbcTemplate.query(query, new UserRowMapper(), firstName);
         }
         catch (EmptyResultDataAccessException e) {
             return null;
@@ -108,7 +106,7 @@ public class UserDaoImpl implements UserDao
 
     @Override
     @Transactional(readOnly = true)
-    public Page<User> findByLastNameOrderByLastName(String lastName, int limit, int offset)
+    public List<User> findByLastNameOrderByLastName(String lastName)
     {
         if (lastName == null)
             throw new NullPointerException("lastName arg cannot be null");
@@ -118,12 +116,11 @@ public class UserDaoImpl implements UserDao
                 LEFT JOIN "group" gr ON u.group_id = gr.id
                 LEFT JOIN role r ON u.role_id = r.id
                 WHERE u.last_name = ?
-                ORDER BY u.last_name
-                LIMIT ? OFFSET ?;
+                ORDER BY u.last_name;
                 """;
         try
         {
-            return new PageImpl<>(jdbcTemplate.query(query, new UserRowMapper(), lastName, limit, offset));
+            return jdbcTemplate.query(query, new UserRowMapper(), lastName);
         }
         catch (EmptyResultDataAccessException e) {
             return null;
@@ -132,7 +129,7 @@ public class UserDaoImpl implements UserDao
 
     @Override
     @Transactional(readOnly = true)
-    public Page<User> findByMiddleNameOrderByMiddleName(String middleName, int limit, int offset)
+    public List<User> findByMiddleNameOrderByMiddleName(String middleName)
     {
         if (middleName == null)
             throw new NullPointerException("middleName arg cannot be null");
@@ -142,12 +139,11 @@ public class UserDaoImpl implements UserDao
                 LEFT JOIN "group" gr ON u.group_id = gr.id
                 LEFT JOIN role r ON u.role_id = r.id
                 WHERE u.middle_name = ?
-                ORDER BY u.middle_name
-                LIMIT ? OFFSET ?;
+                ORDER BY u.middle_name;
                 """;
         try
         {
-            return new PageImpl<>(jdbcTemplate.query(query, new UserRowMapper(), middleName, limit, offset));
+            return jdbcTemplate.query(query, new UserRowMapper(), middleName);
         }
         catch (EmptyResultDataAccessException e) {
             return null;

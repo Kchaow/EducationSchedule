@@ -16,10 +16,12 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.sql.RowSet;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Objects;
 
 @Repository
@@ -48,10 +50,10 @@ public class SubjectDaoImpl implements SubjectDao
 
     @Override
     @Transactional(readOnly = true)
-    public Page<Subject> findAll(int limit, int offset)
+        public List<Subject> findAll()
     {
-        final String query = "SELECT id, name FROM subject LIMIT ? OFFSET ?";
-        return new PageImpl<>(jdbcTemplate.query(query, new SubjectRowMapper(), limit, offset));
+        final String query = "SELECT id, name FROM subject";
+        return jdbcTemplate.query(query, new SubjectRowMapper());
     }
 
     @Override
