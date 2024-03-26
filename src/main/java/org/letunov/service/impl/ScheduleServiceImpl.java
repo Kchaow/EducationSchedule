@@ -234,11 +234,14 @@ public class ScheduleServiceImpl implements ScheduleService
     }
 
     @Override
-    public ResponseEntity<Object> saveOrUpdateClass(ClassDto classDto, long templateId)
+    public ResponseEntity<Long> saveOrUpdateClass(ClassDto classDto, long templateId)
     {
+        log.info(classDto.toString());
         ScheduleTemplate scheduleTemplate = scheduleTemplateDao.findById(templateId);
         if (scheduleTemplate == null)
             throw new NoSuchElementException("%d id scheduleTemplate doesn't exist".formatted(templateId));
+        if (classDto.getSubject() == null)
+            throw new NullPointerException("subjectDto of classDto was null");
         Subject subject = subjectDao.findById(classDto.getSubject().getId());
         if (subject == null)
             throw new NoSuchElementException("%d id subject doesn't exist".formatted(classDto.getSubject().getId()));
@@ -247,9 +250,16 @@ public class ScheduleServiceImpl implements ScheduleService
             throw new NoSuchElementException("%d id user doesn't exist".formatted(classDto.getUserNamesDto().getId()));
         if (classDto.getDayOfWeek() > 7 || classDto.getDayOfWeek() < 1)
             throw new IndexOutOfBoundsException("day of week index must be in range 1..7");
+        if (classDto.getWeekNumber() < 1)
+            throw new IndexOutOfBoundsException("weekNumber cannot be less or equal 0");
+        if (classDto.getClassNumber() < 1 || classDto.getClassNumber() > 6)
+            throw new IndexOutOfBoundsException("classNumber must be in range 1..6");
         Group group = groupDao.findById(classDto.getGroupsId().getFirst());
         if (group == null)
             throw new NoSuchElementException("%d id group doesn't exist".formatted(classDto.getGroupsId().getFirst()));
+
+
+
         Class clazz = new Class();
         Class existingClass = aClassDao.findByWeekNumberAndSubjectIdAndAudienceNumberAndDayOfWeeKAndClassNumber(classDto.getWeekNumber(), classDto.getSubject().getId(), classDto.getAudience(),
                 DayOfWeek.of(classDto.getDayOfWeek()), classDto.getClassNumber(), scheduleTemplate);
@@ -260,20 +270,21 @@ public class ScheduleServiceImpl implements ScheduleService
                 existingClass.getGroup().add(group);
             }
             existingClass.setUser(teacher);
-            aClassDao.save(existingClass);
-            return ResponseEntity.noContent().build();
+            return new ResponseEntity<Long>(aClassDao.save(existingClass).getId(), HttpStatus.OK);
         }
 
         clazz.setScheduleTemplate(scheduleTemplate);
         clazz.setUser(teacher);
         List<Group> groups = new ArrayList<>();
         groups.add(group);
+        clazz.setWeekNumber(classDto.getWeekNumber());
         clazz.setGroup(groups);
+        clazz.setClassNumber(classDto.getClassNumber());
         clazz.setSubject(subject);
         clazz.setAudience(classDto.getAudience());
         clazz.setDayOfWeek(DayOfWeek.of(classDto.getDayOfWeek()));
         aClassDao.save(clazz);
-        return ResponseEntity.noContent().build();
+        return new ResponseEntity<Long>(aClassDao.save(clazz).getId(), HttpStatus.OK);
     }
 
 }

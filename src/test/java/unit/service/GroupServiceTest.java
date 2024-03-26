@@ -55,7 +55,7 @@ public class GroupServiceTest
         int page = 0;
         int size = 10;
         Pageable pageRequest = PageRequest.of(page, size);
-        when(groupDao.findAllOrderByNameAsc(anyInt(), anyInt())).thenReturn(new PageImpl<>(groupList, pageRequest, groupList.size()));
+        when(groupDao.findAllOrderByNameAsc()).thenReturn(groupList);
 
         assertEquals(names, groupService.getGroupsNames());
     }

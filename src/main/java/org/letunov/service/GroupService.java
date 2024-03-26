@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface GroupService
 {
-    List<String> getGroupsNames();
-
-    ResponseEntity<Group> getStudentGroup(long studentId);
+    public List<String> getGroupsNames();
+    public List<Group> getGroups();
+    public ResponseEntity<Group> getStudentGroup(long studentId);
 }

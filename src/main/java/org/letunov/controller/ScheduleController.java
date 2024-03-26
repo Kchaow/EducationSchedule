@@ -40,7 +40,7 @@ public class ScheduleController
     }
 
     @PutMapping("/templates/{templateId}")
-    public ResponseEntity<Object> saveOrUpdateClass(ClassDto classDto, @PathVariable("templateId") long templateId)
+    public ResponseEntity<Long> saveOrUpdateClass(@RequestBody ClassDto classDto, @PathVariable("templateId") long templateId)
     {
         return scheduleService.saveOrUpdateClass(classDto, templateId);
     }

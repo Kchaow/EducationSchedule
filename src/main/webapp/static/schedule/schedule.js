@@ -11,7 +11,7 @@ window.onload = function ()
     select.addEventListener("change", getClasses);
 }
 
-function incrementWeekNumber()
+async function incrementWeekNumber()
 {
     if (weekNumber < 16)
     {
@@ -19,10 +19,10 @@ function incrementWeekNumber()
     }
     document.querySelector('.current-week-number').textContent = weekNumber;
     if (document.querySelector('[name="group-select"]').value !== "default")
-        getClasses();
+        await getClasses();
 }
 
-function decrementWeekNumber()
+async function decrementWeekNumber()
 {
     if (weekNumber > 1)
     {
@@ -30,7 +30,7 @@ function decrementWeekNumber()
     }
     document.querySelector('.current-week-number').textContent = weekNumber;
     if (document.querySelector('[name="group-select"]').value !== "default")
-        getClasses();
+        await getClasses();
 }
 
 async function getClasses()
@@ -59,7 +59,8 @@ async function getClasses()
         }
          json.classes.forEach(async el => {
             let clazz = days[el.dayOfWeek-1].querySelector(`[data-stroke-number="${el.classNumber}"]`);
-                clazz.querySelector('[data-teacher]').textContent = el.userNamesDto.firstName;
+                if (el.userNamesDto)
+                    clazz.querySelector('[data-teacher]').textContent = el.userNamesDto.firstName;
                 clazz.querySelector('[data-subject-name]').textContent = el.subject.name;
                 clazz.querySelector('[data-stroke-audience]').textContent = el.audience;
 
@@ -125,6 +126,7 @@ async function getUserGroup(userId)
     let response = await fetch(url);
     if (response.ok && !response.redirected)
     {
+        console.log(response);
         let json = await response.json();
         return json.name;
     }

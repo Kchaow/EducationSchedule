@@ -1,6 +1,7 @@
 package org.letunov.controller;
 
 import lombok.extern.slf4j.Slf4j;
+import org.letunov.domainModel.Group;
 import org.letunov.domainModel.ScheduleTemplate;
 import org.letunov.domainModel.Subject;
 import org.letunov.domainModel.User;
@@ -84,13 +85,13 @@ public class TemplatesController
     @GetMapping("/{id}")
     public String getTemplate(@PathVariable("id") Long id, Model model)
     {
-        List<String> groupNames = groupService.getGroupsNames();
+        List<Group> groups = groupService.getGroups();
         List<Subject> subjects = subjectService.getSubjectsList();
         List<User> teachers = userService.getTeachersList();
         ScheduleTemplate templateForModification = scheduleTemplateService.getScheduleTemplate(id);
         log.info(templateForModification.toString());
         model.addAttribute("subjects", subjects);
-        model.addAttribute("groups", groupNames);
+        model.addAttribute("groups", groups);
         model.addAttribute("teachers", teachers);
         model.addAttribute("modificatedTemplate", templateForModification);
         return "template";

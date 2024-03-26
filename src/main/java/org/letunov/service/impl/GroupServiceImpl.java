@@ -20,12 +20,18 @@ public class GroupServiceImpl implements GroupService
         this.groupDao = groupDao;
     }
 
-    @Override //стримы?
+    @Override
     public List<String> getGroupsNames()
     {
         List<String> groupNames = new ArrayList<>();
-        groupDao.findAllOrderByNameAsc(10, 0).stream().forEach((group) -> groupNames.add(group.getName()));
+        groupDao.findAllOrderByNameAsc().forEach((group) -> groupNames.add(group.getName()));
         return groupNames;
+    }
+
+    @Override
+    public List<Group> getGroups()
+    {
+        return groupDao.findAllOrderByNameAsc();
     }
 
     @Override

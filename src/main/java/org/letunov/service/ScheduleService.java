@@ -9,5 +9,5 @@ public interface ScheduleService
     ResponseEntity<ScheduleDto> getGroupSchedule(int weekNumber, String groupName);
     ResponseEntity<ScheduleDto> getGroupSchedule(int weekNumber, String groupName, long templateId);
     ResponseEntity<String> updateSchedule(ScheduleDto scheduleDto);
-    ResponseEntity<Object> saveOrUpdateClass(ClassDto classDto, long templateId);
+    ResponseEntity<Long> saveOrUpdateClass(ClassDto classDto, long templateId);
 }

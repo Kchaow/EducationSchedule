@@ -121,8 +121,8 @@ public class DaoTest
     @Test
     public void GroupFindAllOrderByNameAscTest()
     {
-        Page<Group> groupPage = groupDao.findAllOrderByNameAsc(10, 0);
-        assertEquals(3, groupPage.getTotalElements());
+        List<Group> groupPage = groupDao.findAllOrderByNameAsc();
+        assertEquals(3, groupPage.size());
     }
 
     @Test
@@ -432,7 +432,7 @@ public class DaoTest
     @Test
     public void ClassSave()
     {
-        List<Group> groupList = groupDao.findAllOrderByNameAsc(10, 0).getContent();
+        List<Group> groupList = groupDao.findAllOrderByNameAsc();
         User user = userDao.findById(1);
         Subject subject = subjectDao.findById(1);
         ScheduleTemplate scheduleTemplate = scheduleTemplateDao.findById(1);

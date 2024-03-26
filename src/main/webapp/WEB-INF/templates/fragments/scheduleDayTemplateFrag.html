@@ -1,4 +1,4 @@
-<div th:fragment="scheduleStrokeContainer(number, weekDayIndex)" class="schedule-stroke-container" th:data-weekday-index="${weekDayIndex}" th:data-stroke-number="${number}">
+<div th:fragment="scheduleStrokeContainer(number, weekDayIndex)" class="schedule-stroke-container" data-class-id='' th:data-weekday-index="${weekDayIndex}" th:data-stroke-number="${number}">
     <div class="stroke-number text-middle">
         <p th:text="${number} + '.'" p>1.</p>
     </div>

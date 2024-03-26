@@ -30,12 +30,10 @@ public class GroupDaoImpl implements GroupDao
         this.jdbcTemplate = jdbcTemplate;
     }
     @Override
-    public Page<Group> findAllOrderByNameAsc(int size, int page)
+    public List<Group> findAllOrderByNameAsc()
     {
-        Pageable pageable = PageRequest.of(page, size);
         final String query = "SELECT id, name FROM \"group\" ORDER BY name ASC;";
-        List<Group> groups = jdbcTemplate.query(query, new GroupRowMapper());
-        return new PageImpl<>(groups, pageable, groups.size());
+        return jdbcTemplate.query(query, new GroupRowMapper());
     }
 
     @Override

@@ -11,7 +11,7 @@
 <body>
     <select name="group-select">
         <option value="default">Группа</option>
-        <option th:each="group : ${groups}" th:value="${group}" th:text="${group}"></option>
+        <option th:each="group : ${groups}" th:value="${group.id}" th:text="${group.name}"></option>
     </select>
     <h3 class="template-name" th:text="${modificatedTemplate.name}"></h3>
     <form method="POST" th:object="${modificatedTemplate}" th:action="@{/schedule/templates/update}">
