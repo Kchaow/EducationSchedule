@@ -41,6 +41,31 @@ public class ClassDaoImpl implements ClassDao
     }
 
     @Override
+    public Class findByWeekNumberAndSubjectIdAndAudienceNumberAndDayOfWeeKAndClassNumber(int weekNumber, long subjectId, int audienceNumber, DayOfWeek dayOfWeek,
+                                                                                         int classNumber, ScheduleTemplate scheduleTemplate)
+    {
+        final String query = """
+                SELECT e.id, e.week_number, e.user_id, e.day_of_week, e.class_number, e.audience,
+                       e.subject_id, gr.group_id, e.schedule_template_id
+                       FROM class e
+                       LEFT JOIN class_group gr ON e.id = gr.class_id
+                       WHERE e.week_number = ? AND e.schedule_template_id = ? AND e.subject_id = ? AND e.audience = ? AND e.day_of_week = ? AND e.class_number = ?
+                       ORDER BY e.day_of_week ASC
+                """;
+        List<Class> classList = jdbcTemplate.query(query, new ClassExtractor(), weekNumber, subjectId, audienceNumber, dayOfWeek.getValue(), classNumber , scheduleTemplate.getId());
+        if (classList == null)
+            return null;
+        try
+        {
+            return fillDependence(classList).getFirst();
+        }
+        catch (NoSuchElementException e)
+        {
+            return null;
+        }
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public List<Class> findByWeekNumberOrderByDayOfWeekAscClassNumberAsc(int weekNumber)
     {

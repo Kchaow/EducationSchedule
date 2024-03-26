@@ -1,4 +1,4 @@
-<div th:fragment="scheduleStrokeContainer(number)" class="schedule-stroke-container" th:data-stroke-number="${number}">
+<div th:fragment="scheduleStrokeContainer(number, weekDayIndex)" class="schedule-stroke-container" th:data-weekday-index="${weekDayIndex}" th:data-stroke-number="${number}">
     <div class="stroke-number text-middle">
         <p th:text="${number} + '.'" p>1.</p>
     </div>
@@ -26,13 +26,13 @@
     </div>
 </div>
 
-<div th:fragment="scheduleDay(weekDay)" class="schedule-day">
+<div th:fragment="scheduleDay(weekDay, weekDayIndex)" class="schedule-day">
     <p th:text="${weekDay}">Понедельник</p>
     <p class="date"></p>
-    <div th:replace="~{::scheduleStrokeContainer('1')}"></div>
-    <div th:replace="~{::scheduleStrokeContainer('2')}"></div>
-    <div th:replace="~{::scheduleStrokeContainer('3')}"></div>
-    <div th:replace="~{::scheduleStrokeContainer('4')}"></div>
-    <div th:replace="~{::scheduleStrokeContainer('5')}"></div>
-    <div th:replace="~{::scheduleStrokeContainer('6')}"></div>
+    <div th:replace="~{::scheduleStrokeContainer('1', ${weekDayIndex})}"></div>
+    <div th:replace="~{::scheduleStrokeContainer('2', ${weekDayIndex})}"></div>
+    <div th:replace="~{::scheduleStrokeContainer('3', ${weekDayIndex})}"></div>
+    <div th:replace="~{::scheduleStrokeContainer('4', ${weekDayIndex})}"></div>
+    <div th:replace="~{::scheduleStrokeContainer('5', ${weekDayIndex})}"></div>
+    <div th:replace="~{::scheduleStrokeContainer('6', ${weekDayIndex})}"></div>
 </div>

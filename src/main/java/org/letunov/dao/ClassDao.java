@@ -5,10 +5,13 @@ import org.letunov.domainModel.Group;
 import org.letunov.domainModel.ScheduleTemplate;
 import org.letunov.domainModel.User;
 
+import java.time.DayOfWeek;
 import java.util.List;
 
 public interface ClassDao
 {
+    Class findByWeekNumberAndSubjectIdAndAudienceNumberAndDayOfWeeKAndClassNumber(int weekNumber, long subjectId, int audienceNumber, DayOfWeek dayOfWeek,
+                                                                                  int classNumber, ScheduleTemplate scheduleTemplate);
     List<Class> findByWeekNumberOrderByDayOfWeekAscClassNumberAsc(int weekNumber);
     List<Class> findByWeekNumberOrderByDayOfWeekAscClassNumberAsc(int weekNumber, ScheduleTemplate scheduleTemplate);
     List<Class> findByWeekNumberAndTeacherOrderByDayOfWeekAscClassNumberAsc(int weekNumber, User user);

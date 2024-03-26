@@ -15,7 +15,7 @@
     </select>
     <h3 class="template-name" th:text="${modificatedTemplate.name}"></h3>
     <form method="POST" th:object="${modificatedTemplate}" th:action="@{/schedule/templates/update}">
-        <input type="hidden" th:field="*{id}"/>
+        <input type="hidden" class="template-id" th:field="*{id}"/>
         <label for="name">Название шалона:</label>
         <input type="text" th:field="*{name}"/><br/>
         <label for="startDate">Дата начала учебы:</label>
@@ -31,13 +31,16 @@
         </div>
         <input class="next-button" type="button" value=">>"/>
     </div>
+    <div class="status-container">
+        <p class="status">Сохранено</p>
+    </div>
     <div class="schedule-container">
-        <div th:replace="~{ fragments/scheduleDayTemplateFrag::scheduleDay('Понедельник')}"></div>
-        <div th:replace="~{ fragments/scheduleDayTemplateFrag::scheduleDay('Вторник')}"></div>
-        <div th:replace="~{ fragments/scheduleDayTemplateFrag::scheduleDay('Среда')}"></div>
-        <div th:replace="~{ fragments/scheduleDayTemplateFrag::scheduleDay('Четверг')}"></div>
-        <div th:replace="~{ fragments/scheduleDayTemplateFrag::scheduleDay('Пятница')}"></div>
-        <div th:replace="~{ fragments/scheduleDayTemplateFrag::scheduleDay('Суббота')}"></div>
+        <div th:replace="~{ fragments/scheduleDayTemplateFrag::scheduleDay('Понедельник', 1)}"></div>
+        <div th:replace="~{ fragments/scheduleDayTemplateFrag::scheduleDay('Вторник', 2)}"></div>
+        <div th:replace="~{ fragments/scheduleDayTemplateFrag::scheduleDay('Среда', 3)}"></div>
+        <div th:replace="~{ fragments/scheduleDayTemplateFrag::scheduleDay('Четверг', 4)}"></div>
+        <div th:replace="~{ fragments/scheduleDayTemplateFrag::scheduleDay('Пятница', 5)}"></div>
+        <div th:replace="~{ fragments/scheduleDayTemplateFrag::scheduleDay('Суббота', 6)}"></div>
     </div>
 </body>
 </html>

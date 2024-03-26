@@ -4,9 +4,11 @@ import org.letunov.exceptions.AccessDeniedException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.util.NoSuchElementException;
 
@@ -20,8 +22,11 @@ public class ExceptionController
     }
 
     @ExceptionHandler({NoSuchElementException.class})
-    public ResponseEntity<String> noSuchElementExceptionHandler(RuntimeException exception)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public String noSuchElementExceptionHandler(RuntimeException exception, Model model)
     {
-        return new ResponseEntity<String>(exception.getMessage(), HttpStatus.NOT_FOUND);
+        model.addAttribute("errorCode", 404);
+        model.addAttribute("errorMessage", exception.getMessage());
+        return "errorPage";
     }
 }
