@@ -13,6 +13,17 @@
         <option value="default">Группа</option>
         <option th:each="group : ${groups}" th:value="${group}" th:text="${group}"></option>
     </select>
+    <h3 class="template-name" th:text="${modificatedTemplate.name}"></h3>
+    <form method="POST" th:object="${modificatedTemplate}" th:action="@{/schedule/templates/update}">
+        <input type="hidden" th:field="*{id}"/>
+        <label for="name">Название шалона:</label>
+        <input type="text" th:field="*{name}"/><br/>
+        <label for="startDate">Дата начала учебы:</label>
+        <input type="date" th:field="*{startDate}"/><br/>
+        <label for="weekCount">Количество недель учебы:</label>
+        <input type="number" th:field="*{weekCount}"/><br/>
+        <input type="submit" value="Обновить"/>
+    </form>
     <div class="week-number-select-container">
         <input class="prev-button" type="button" value="<<"/>
         <div class="text-middle">

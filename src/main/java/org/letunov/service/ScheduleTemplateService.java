@@ -8,9 +8,8 @@ import java.util.List;
 public interface ScheduleTemplateService
 {
     List<ScheduleTemplate> getScheduleTemplates();
-
     void addNewScheduleTemplate(ScheduleTemplate scheduleTemplate);
     void deleteScheduleTemplate(long id);
-
+    ScheduleTemplate getScheduleTemplate(long id);
     void makeTemplateActive(String templateName);
 }

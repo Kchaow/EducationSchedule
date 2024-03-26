@@ -24,6 +24,12 @@ public class ScheduleTemplateServiceImpl implements ScheduleTemplateService
     }
 
     @Override
+    public ScheduleTemplate getScheduleTemplate(long id)
+    {
+        return scheduleTemplateDao.findById(id);
+    }
+
+    @Override
     public List<ScheduleTemplate> getScheduleTemplates()
     {
         return scheduleTemplateDao.findAll();
@@ -32,7 +38,6 @@ public class ScheduleTemplateServiceImpl implements ScheduleTemplateService
     @Override
     public void addNewScheduleTemplate(ScheduleTemplate scheduleTemplate)
     {
-        log.info("%s object is adding".formatted(scheduleTemplate.toString()));
         scheduleTemplateDao.save(scheduleTemplate);
     }
 
