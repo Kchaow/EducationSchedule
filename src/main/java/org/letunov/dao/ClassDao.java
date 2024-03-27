@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface ClassDao
 {
-    Class findByWeekNumberAndSubjectIdAndAudienceNumberAndDayOfWeeKAndClassNumber(int weekNumber, long subjectId, int audienceNumber, DayOfWeek dayOfWeek,
+    List<Class> findByWeekNumberAndSubjectIdAndAudienceNumberAndDayOfWeeKAndClassNumber(int weekNumber, long subjectId, int audienceNumber, DayOfWeek dayOfWeek,
                                                                                   int classNumber, ScheduleTemplate scheduleTemplate);
     List<Class> findByWeekNumberOrderByDayOfWeekAscClassNumberAsc(int weekNumber);
     List<Class> findByWeekNumberOrderByDayOfWeekAscClassNumberAsc(int weekNumber, ScheduleTemplate scheduleTemplate);

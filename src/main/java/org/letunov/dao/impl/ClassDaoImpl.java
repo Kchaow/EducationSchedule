@@ -41,7 +41,7 @@ public class ClassDaoImpl implements ClassDao
     }
 
     @Override
-    public Class findByWeekNumberAndSubjectIdAndAudienceNumberAndDayOfWeeKAndClassNumber(int weekNumber, long subjectId, int audienceNumber, DayOfWeek dayOfWeek,
+    public List<Class> findByWeekNumberAndSubjectIdAndAudienceNumberAndDayOfWeeKAndClassNumber(int weekNumber, long subjectId, int audienceNumber, DayOfWeek dayOfWeek,
                                                                                          int classNumber, ScheduleTemplate scheduleTemplate)
     {
         final String query = """
@@ -52,12 +52,12 @@ public class ClassDaoImpl implements ClassDao
                        WHERE e.week_number = ? AND e.schedule_template_id = ? AND e.subject_id = ? AND e.audience = ? AND e.day_of_week = ? AND e.class_number = ?
                        ORDER BY e.day_of_week ASC
                 """;
-        List<Class> classList = jdbcTemplate.query(query, new ClassExtractor(), weekNumber, subjectId, audienceNumber, dayOfWeek.getValue(), classNumber , scheduleTemplate.getId());
+        List<Class> classList = jdbcTemplate.query(query, new ClassExtractor(), weekNumber, scheduleTemplate.getId(), subjectId, audienceNumber, dayOfWeek.getValue(), classNumber);
         if (classList == null)
             return null;
         try
         {
-            return fillDependence(classList).getFirst();
+            return fillDependence(classList);
         }
         catch (NoSuchElementException e)
         {
@@ -245,6 +245,7 @@ public class ClassDaoImpl implements ClassDao
             throw new TheDependentEntityIsPreservedBeforeTheIndependentEntity("Trying to save a dependent clazz entity before an independent user entity");
         if (clazz.getScheduleTemplate() != null && scheduleTemplateDao.findById(clazz.getScheduleTemplate().getId()) == null)
             throw new TheDependentEntityIsPreservedBeforeTheIndependentEntity("Trying to save a dependent clazz entity before an independent scheduleTemplate entity");
+
         if (clazz.getId() != 0 && findById(clazz.getId()) != null)
         {
             final String query = """
@@ -256,19 +257,20 @@ public class ClassDaoImpl implements ClassDao
                     clazz.getSubject().getId(), clazz.getScheduleTemplate().getId(), clazz.getId());
             if (clazz.getGroup() != null && !clazz.getGroup().isEmpty())
             {
-                String groupQuery = "SELECT id, group_id, class_id FROM class_group WHERE group_id = ? AND class_id = ?";
-                for (Group group : clazz.getGroup())
-                {
-                    SqlRowSet sqlRowSet = jdbcTemplate.queryForRowSet(groupQuery, group.getId(), clazz.getId());
-                    if (sqlRowSet.first())
-                    {
-                        long id = sqlRowSet.getLong("id");
-                        String groupUpdate = "UPDATE class_group SET group_id = ?, class_id = ? WHERE id = ?";
-                        jdbcTemplate.update(groupUpdate, group.getId(), clazz.getId(), id);
-                    }
-                    String groupRelationSave = "INSERT INTO class_group(group_id, class_id) VALUES(?, ?)";
-                    jdbcTemplate.update(groupRelationSave, group.getId(), clazz.getId());
-                }
+//                String groupQuery = "SELECT id, group_id, class_id FROM class_group WHERE group_id = ? AND class_id = ?";
+//                for (Group group : clazz.getGroup())
+//                {
+//                    SqlRowSet sqlRowSet = jdbcTemplate.queryForRowSet(groupQuery, group.getId(), clazz.getId());
+//                    if (sqlRowSet.first())
+//                    {
+//                        long id = sqlRowSet.getLong("id");
+//                        String groupUpdate = "UPDATE class_group SET group_id = ?, class_id = ? WHERE id = ?";
+//                        jdbcTemplate.update(groupUpdate, group.getId(), clazz.getId(), id);
+//                    }
+//                    String groupRelationSave = "INSERT INTO class_group(group_id, class_id) VALUES(?, ?)";
+//                    jdbcTemplate.update(groupRelationSave, group.getId(), clazz.getId());
+//                }
+                List<Group> notFoundGroups = new ArrayList<>(clazz.getGroup());
                 String allRelationsQuery = """
                         SELECT class_group.id, gr.name group_name, group_id, class_id
                         FROM class_group
@@ -281,11 +283,20 @@ public class ClassDaoImpl implements ClassDao
                     Group group = new Group();
                     group.setId(sqlRowSet.getInt("group_id"));
                     group.setName(sqlRowSet.getString("group_name"));
-                    if (clazz.getGroup().contains(group))
+                    if (!clazz.getGroup().contains(group))
                     {
                         String deleteRelationQuery = "DELETE FROM class_group WHERE id = ?";
                         jdbcTemplate.update(deleteRelationQuery, sqlRowSet.getInt("id"));
                     }
+                    else
+                    {
+                        notFoundGroups.remove(group);
+                    }
+                }
+                final String addNewRelationQuery = "INSERT INTO class_group(class_id, group_id) VALUES(?, ?)";
+                for (Group group : notFoundGroups)
+                {
+                    jdbcTemplate.update(addNewRelationQuery, clazz.getId(), group.getId());
                 }
             }
             return findById(clazz.getId());
@@ -398,12 +409,12 @@ public class ClassDaoImpl implements ClassDao
             Class clazz;
             while (rs.next())
             {
-                long educationDayId = rs.getLong("id");
-                clazz = classMap.get(educationDayId);
+                long classId = rs.getLong("id");
+                clazz = classMap.get(classId);
                 if (clazz == null)
                 {
                     clazz = new Class();
-                    clazz.setId(educationDayId);
+                    clazz.setId(classId);
                     clazz.setDayOfWeek(DayOfWeek.of(rs.getInt("day_of_week")));
                     clazz.setAudience(rs.getInt("audience"));
                     clazz.setClassNumber(rs.getInt("class_number"));
@@ -425,18 +436,18 @@ public class ClassDaoImpl implements ClassDao
                         subject.setId(subjectId);
                         clazz.setSubject(subject);
                     }
-                    classMap.put(educationDayId, clazz);
+                    classMap.put(classId, clazz);
                 }
 
                 long groupId = rs.getLong("group_id");
                 if (groupId != 0) {
-                    Set<Group> groupSet = classGroup.get(educationDayId);
+                    Set<Group> groupSet = classGroup.get(classId);
                     if (groupSet == null) {
                         groupSet = new HashSet<>();
                         Group group = new Group();
                         group.setId(groupId);
                         groupSet.add(group);
-                        classGroup.put(educationDayId, groupSet);
+                        classGroup.put(classId, groupSet);
                     } else {
                         Group group = new Group();
                         group.setId(groupId);

@@ -36,11 +36,11 @@ public class DomainObjectGenerator
         List<ClassDto> classDtoList = new ArrayList<>();
         for (Class clazz : classList)
         {
-            List<Long> groupIds = new ArrayList<>();
-            clazz.getGroup().forEach(x -> groupIds.add(x.getId()));
-            SubjectDto subjectDto = new SubjectDto();
-            subjectDto.setId(clazz.getSubject().getId());
-            subjectDto.setName(clazz.getSubject().getName());
+//            List<Long> groupIds = new ArrayList<>();
+//            clazz.getGroup().forEach(x -> groupIds.add(x.getId()));
+//            SubjectDto subjectDto = new SubjectDto();
+//            subjectDto.setId(clazz.getSubject().getId());
+//            subjectDto.setName(clazz.getSubject().getName());
             UserNamesDto userNamesDto = new UserNamesDto();
             userNamesDto.setId(clazz.getUser().getId());
             userNamesDto.setFirstName(clazz.getUser().getFirstName());
@@ -49,10 +49,10 @@ public class DomainObjectGenerator
             ClassDto classDto = ClassDto.builder()
                     .id(clazz.getId())
                     .userNamesDto(userNamesDto)
-                    .subject(subjectDto)
+                    .subject(clazz.getSubject())
                     .audience(clazz.getAudience())
                     .classNumber(clazz.getClassNumber())
-                    .groupsId(groupIds)
+                    .groups(clazz.getGroup())
                     .dayOfWeek(clazz.getDayOfWeek().getValue())
                     .weekNumber(clazz.getWeekNumber())
                     .build();

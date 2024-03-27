@@ -39,10 +39,22 @@ public class ScheduleController
         return scheduleService.getGroupSchedule(weekNumber, groupName, templateId);
     }
 
+    @PutMapping("/class/detach/{classId}/{groupId}")
+    public ResponseEntity<ClassDto> detachClass(@PathVariable("classId") long classId,@PathVariable("groupId") long groupId)
+    {
+        return scheduleService.detachClass(classId, groupId);
+    }
+
     @PutMapping("/templates/{templateId}")
-    public ResponseEntity<Long> saveOrUpdateClass(@RequestBody ClassDto classDto, @PathVariable("templateId") long templateId)
+    public ResponseEntity<ClassDto> saveOrUpdateClass(@RequestBody ClassDto classDto, @PathVariable("templateId") long templateId)
     {
         return scheduleService.saveOrUpdateClass(classDto, templateId);
+    }
+
+    @DeleteMapping("/class/{classId}/{groupId}")
+    public ResponseEntity<Object> deleteClass(@PathVariable("classId") long classId,@PathVariable("groupId") long groupId)
+    {
+        return scheduleService.deleteClass(classId, groupId);
     }
 
     @GetMapping

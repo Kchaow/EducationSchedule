@@ -11,6 +11,7 @@ import org.letunov.service.dto.ScheduleDto;
 import org.letunov.service.dto.SubjectDto;
 import org.letunov.service.dto.UserNamesDto;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,13 +28,15 @@ import java.util.*;
 @Slf4j
 public class ScheduleServiceImpl implements ScheduleService
 {
+    private final ConversionService conversionService;
     private final GroupDao groupDao;
     private final ClassDao aClassDao;
     private final UserDao userDao;
     private final ScheduleTemplateDao scheduleTemplateDao;
     private final SubjectDao subjectDao;
-    public ScheduleServiceImpl(GroupDao groupDao, ClassDao aClassDao, UserDao userDao, ScheduleTemplateDao scheduleTemplateDao, SubjectDao subjectDao)
+    public ScheduleServiceImpl(GroupDao groupDao, ClassDao aClassDao, UserDao userDao, ScheduleTemplateDao scheduleTemplateDao, SubjectDao subjectDao, ConversionService conversionService)
     {
+        this.conversionService = conversionService;
         this.subjectDao = subjectDao;
         this.groupDao = groupDao;
         this.aClassDao = aClassDao;
@@ -71,21 +74,21 @@ public class ScheduleServiceImpl implements ScheduleService
                         .middleName(user.getMiddleName())
                         .build();
             }
-            SubjectDto subjectDto = SubjectDto.builder()
-                    .id(clazz.getSubject().getId())
-                    .name(clazz.getSubject().getName())
-                    .build();
-            List<Long> groupsId = new ArrayList<>();
-            clazz.getGroup().forEach((x) -> groupsId.add(x.getId()));
+//            SubjectDto subjectDto = SubjectDto.builder()
+//                    .id(clazz.getSubject().getId())
+//                    .name(clazz.getSubject().getName())
+//                    .build();
+//            List<Long> groupsId = new ArrayList<>();
+//            clazz.getGroup().forEach((x) -> groupsId.add(x.getId()));
             ClassDto educationDayDto = ClassDto.builder()
                     .id(clazz.getId())
                     .userNamesDto(userNamesDto)
-                    .groupsId(groupsId)
+                    .groups(clazz.getGroup())
                     .dayOfWeek(clazz.getDayOfWeek().getValue())
                     .classNumber(clazz.getClassNumber())
                     .audience(clazz.getAudience())
                     .weekNumber(clazz.getWeekNumber())
-                    .subject(subjectDto)
+                    .subject(clazz.getSubject())
                     .build();
             classesDto.add(educationDayDto);
         }
@@ -115,6 +118,19 @@ public class ScheduleServiceImpl implements ScheduleService
         scheduleDto.setDates(dates);
         scheduleDto.setClasses(classesDto);
         return new ResponseEntity<ScheduleDto>(scheduleDto, HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<ClassDto> detachClass(long classId, long groupId)
+    {
+        deleteClass(classId, groupId);
+        Class newClass = aClassDao.findById(classId);
+        List<Group> groups = new ArrayList<>();
+        groups.add(groupDao.findById(groupId));
+        newClass.setGroup(groups);
+        newClass.setId(0);
+        Class saved = aClassDao.save(newClass);
+        return ResponseEntity.ok(conversionService.convert(saved, ClassDto.class));
     }
 
     @Override
@@ -150,21 +166,21 @@ public class ScheduleServiceImpl implements ScheduleService
                         .middleName(user.getMiddleName())
                         .build();
             }
-            SubjectDto subjectDto = SubjectDto.builder()
-                    .id(clazz.getSubject().getId())
-                    .name(clazz.getSubject().getName())
-                    .build();
-            List<Long> groupsId = new ArrayList<>();
-            clazz.getGroup().forEach((x) -> groupsId.add(x.getId()));
+//            SubjectDto subjectDto = SubjectDto.builder()
+//                    .id(clazz.getSubject().getId())
+//                    .name(clazz.getSubject().getName())
+//                    .build();
+//            List<Long> groupsId = new ArrayList<>();
+//            clazz.getGroup().forEach((x) -> groupsId.add(x.getId()));
             ClassDto educationDayDto = ClassDto.builder()
                     .id(clazz.getId())
                     .userNamesDto(userNamesDto)
-                    .groupsId(groupsId)
+                    .groups(clazz.getGroup())
                     .dayOfWeek(clazz.getDayOfWeek().getValue())
                     .classNumber(clazz.getClassNumber())
                     .audience(clazz.getAudience())
                     .weekNumber(clazz.getWeekNumber())
-                    .subject(subjectDto)
+                    .subject(clazz.getSubject())
                     .build();
             classesDto.add(educationDayDto);
         }
@@ -219,22 +235,23 @@ public class ScheduleServiceImpl implements ScheduleService
             clazz.setUser(user);
             clazz.setWeekNumber(educationDayDto.getWeekNumber());
             clazz.setClassNumber(educationDayDto.getClassNumber());
-            List<Group> groups = new ArrayList<>();
-            for (Long id : educationDayDto.getGroupsId())
-            {
-                Group group = new Group();
-                group.setId(id);
-                groups.add(group);
-            }
-            clazz.setGroup(groups);
+//            List<Group> groups = new ArrayList<>();
+//            for (Long id : educationDayDto.getGroupsId())
+//            {
+//                Group group = new Group();
+//                group.setId(id);
+//                groups.add(group);
+//            }
+            clazz.setGroup(educationDayDto.getGroups());
             clazz.setDayOfWeek(DayOfWeek.of(educationDayDto.getDayOfWeek()));
             aClassDao.save(clazz);
         }
         return ResponseEntity.ok().build();
     }
 
+    @Transactional
     @Override
-    public ResponseEntity<Long> saveOrUpdateClass(ClassDto classDto, long templateId)
+    public ResponseEntity<ClassDto> saveOrUpdateClass(ClassDto classDto, long templateId)
     {
         log.info(classDto.toString());
         ScheduleTemplate scheduleTemplate = scheduleTemplateDao.findById(templateId);
@@ -254,15 +271,25 @@ public class ScheduleServiceImpl implements ScheduleService
             throw new IndexOutOfBoundsException("weekNumber cannot be less or equal 0");
         if (classDto.getClassNumber() < 1 || classDto.getClassNumber() > 6)
             throw new IndexOutOfBoundsException("classNumber must be in range 1..6");
-        Group group = groupDao.findById(classDto.getGroupsId().getFirst());
+        Group group = groupDao.findById(classDto.getGroups().getFirst().getId());
         if (group == null)
-            throw new NoSuchElementException("%d id group doesn't exist".formatted(classDto.getGroupsId().getFirst()));
+            throw new NoSuchElementException("%d id group doesn't exist".formatted(classDto.getGroups().getFirst().getId()));
 
 
 
-        Class clazz = new Class();
-        Class existingClass = aClassDao.findByWeekNumberAndSubjectIdAndAudienceNumberAndDayOfWeeKAndClassNumber(classDto.getWeekNumber(), classDto.getSubject().getId(), classDto.getAudience(),
+        Class clazz = conversionService.convert(classDto, Class.class);
+        List<Class> similarClasses = aClassDao.findByWeekNumberAndSubjectIdAndAudienceNumberAndDayOfWeeKAndClassNumber(classDto.getWeekNumber(), classDto.getSubject().getId(), classDto.getAudience(),
                 DayOfWeek.of(classDto.getDayOfWeek()), classDto.getClassNumber(), scheduleTemplate);
+        log.info(similarClasses.toString());
+        Class existingClass = null;
+        for (Class similarClass : similarClasses)
+        {
+            if (!similarClass.equals(clazz))
+            {
+                existingClass = similarClass;
+                break;
+            }
+        }
         if (existingClass != null)
         {
             if (!existingClass.getGroup().contains(group))
@@ -270,21 +297,33 @@ public class ScheduleServiceImpl implements ScheduleService
                 existingClass.getGroup().add(group);
             }
             existingClass.setUser(teacher);
-            return new ResponseEntity<Long>(aClassDao.save(existingClass).getId(), HttpStatus.OK);
+            if (classDto.getId() > 0)
+                aClassDao.deleteById(classDto.getId());
+            ClassDto saved = conversionService.convert(aClassDao.save(existingClass), ClassDto.class);
+            return new ResponseEntity<ClassDto>(saved, HttpStatus.OK);
         }
 
-        clazz.setScheduleTemplate(scheduleTemplate);
-        clazz.setUser(teacher);
-        List<Group> groups = new ArrayList<>();
-        groups.add(group);
-        clazz.setWeekNumber(classDto.getWeekNumber());
-        clazz.setGroup(groups);
-        clazz.setClassNumber(classDto.getClassNumber());
-        clazz.setSubject(subject);
-        clazz.setAudience(classDto.getAudience());
-        clazz.setDayOfWeek(DayOfWeek.of(classDto.getDayOfWeek()));
-        aClassDao.save(clazz);
-        return new ResponseEntity<Long>(aClassDao.save(clazz).getId(), HttpStatus.OK);
+
+        if (classDto.getId() > 0)
+        {
+            clazz.setGroup(aClassDao.findById(classDto.getId()).getGroup());
+        }
+        ClassDto saved = conversionService.convert(aClassDao.save(clazz), ClassDto.class);
+        return new ResponseEntity<ClassDto>(saved, HttpStatus.OK);
     }
 
+    @Override
+    public ResponseEntity<Object> deleteClass(long classId, long groupId)
+    {
+        Class clazz = aClassDao.findById(classId);
+        if (clazz.getGroup().size() > 1)
+        {
+            Group group = groupDao.findById(groupId);
+            clazz.getGroup().remove(group);
+            aClassDao.save(clazz);
+            return ResponseEntity.noContent().build();
+        }
+        aClassDao.deleteById(classId);
+        return ResponseEntity.noContent().build();
+    }
 }
