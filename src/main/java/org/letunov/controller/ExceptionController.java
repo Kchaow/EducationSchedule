@@ -26,7 +26,7 @@ public class ExceptionController
     public String noSuchElementExceptionHandler(RuntimeException exception, Model model)
     {
         model.addAttribute("errorCode", 404);
-        model.addAttribute("errorMessage", exception.getMessage());
+        model.addAttribute("errorMessage", exception.getStackTrace());
         return "errorPage";
     }
 }

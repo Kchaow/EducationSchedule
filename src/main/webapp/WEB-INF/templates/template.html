@@ -25,7 +25,7 @@
         <input type="submit" value="Обновить"/>
     </form>
     <div class="week-number-select-container">
-        <input class="prev-button" type="button" value="<<"/>
+        <input class="prev-button" disabled type="button" value="<<"/>
         <div class="text-middle">
             <p class="current-week-number">1</p>
         </div>
@@ -35,7 +35,7 @@
         <p class="status">Сохранено</p>
     </div>
     <div class="attachment-status">
-        
+
     </div>
     <div class="schedule-container">
         <div th:replace="~{ fragments/scheduleDayTemplateFrag::scheduleDay('Понедельник', 1)}"></div>

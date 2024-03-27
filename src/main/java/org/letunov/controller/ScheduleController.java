@@ -1,7 +1,9 @@
 package org.letunov.controller;
 
+import org.letunov.domainModel.ScheduleTemplate;
 import org.letunov.service.GroupService;
 import org.letunov.service.ScheduleService;
+import org.letunov.service.ScheduleTemplateService;
 import org.letunov.service.dto.ClassDto;
 import org.letunov.service.dto.ScheduleDto;
 import org.springframework.http.ResponseEntity;
@@ -17,10 +19,12 @@ public class ScheduleController
 {
     private final ScheduleService scheduleService;
     private final GroupService groupService;
-    public ScheduleController(ScheduleService scheduleService, GroupService groupService)
+    private final ScheduleTemplateService scheduleTemplateService;
+    public ScheduleController(ScheduleService scheduleService, GroupService groupService, ScheduleTemplateService scheduleTemplateService)
     {
         this.scheduleService = scheduleService;
         this.groupService = groupService;
+        this.scheduleTemplateService = scheduleTemplateService;
     }
 
     @CrossOrigin
@@ -28,6 +32,12 @@ public class ScheduleController
     public ResponseEntity<ScheduleDto> getSchedule(@PathVariable("groupName") String groupName,@PathVariable("weekNumber") int weekNumber)
     {
         return scheduleService.getGroupSchedule(weekNumber, groupName);
+    }
+
+    @GetMapping("/activeTemplate")
+    public ResponseEntity<ScheduleTemplate> getActiveTemplate()
+    {
+        return scheduleTemplateService.getActiveScheduleTemplate();
     }
 
     @CrossOrigin

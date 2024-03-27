@@ -5,6 +5,7 @@ import org.letunov.dao.ScheduleTemplateDao;
 import org.letunov.domainModel.ScheduleTemplate;
 import org.letunov.service.ScheduleService;
 import org.letunov.service.ScheduleTemplateService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -51,11 +52,24 @@ public class ScheduleTemplateServiceImpl implements ScheduleTemplateService
     @Override
     public void makeTemplateActive(String templateName)
     {
-        ScheduleTemplate activeScheduleTemplate = scheduleTemplateDao.findByIsActive(true).getFirst();
-        activeScheduleTemplate.setActive(false);
-        scheduleTemplateDao.save(activeScheduleTemplate);
+        List<ScheduleTemplate> activeScheduleTemplate = scheduleTemplateDao.findByIsActive(true);
+        if (activeScheduleTemplate != null)
+        {
+            for (ScheduleTemplate active : activeScheduleTemplate)
+            {
+                active.setActive(false);
+                scheduleTemplateDao.save(active);
+            }
+        }
         ScheduleTemplate inactiveScheduleTemplate = scheduleTemplateDao.findByName(templateName);
         inactiveScheduleTemplate.setActive(true);
         scheduleTemplateDao.save(inactiveScheduleTemplate);
+    }
+
+    @Override
+    public ResponseEntity<ScheduleTemplate> getActiveScheduleTemplate()
+    {
+        ScheduleTemplate scheduleTemplate = scheduleTemplateDao.findByIsActive(true).getFirst();
+        return ResponseEntity.ok(scheduleTemplate);
     }
 }

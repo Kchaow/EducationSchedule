@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 public class GroupServiceImpl implements GroupService
@@ -38,6 +39,8 @@ public class GroupServiceImpl implements GroupService
     public ResponseEntity<Group> getStudentGroup(long studentId)
     {
         Group group = groupDao.findByUserId(studentId);
+        if (group == null)
+            throw new NoSuchElementException("user %d doesn't have group".formatted(studentId));
         return new ResponseEntity<Group>(group, HttpStatus.OK);
     }
 }

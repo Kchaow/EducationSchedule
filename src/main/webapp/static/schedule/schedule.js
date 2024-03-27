@@ -1,36 +1,44 @@
 let weekNumber = 1;
 
-window.onload = function ()
+window.onload = async function ()
 {
     hideAllStatusStrokes();
     let select = document.querySelector('[name="group-select"]');
     let prevButton = document.querySelector('.prev-button');
     let nextButton = document.querySelector('.next-button');
-    nextButton.addEventListener("click", incrementWeekNumber);
-    prevButton.addEventListener("click", decrementWeekNumber);
+    let scheduleTemplateURL = `http://localhost:8888/EducationSchedule/schedule/activeTemplate`;
+    let scheduleTemplateResponse = await fetch(scheduleTemplateURL);
+    let scheduleTemplate = await scheduleTemplateResponse.json();
+    let weekNumberCount = scheduleTemplate.weekCount;
+    nextButton.addEventListener("click", async () => {
+        prevButton.removeAttribute('disabled');
+        if (weekNumber < weekNumberCount)
+        {
+            weekNumber++;
+        }
+        if (weekNumber == weekNumberCount)
+        {
+            nextButton.setAttribute('disabled', '');
+        }
+        document.querySelector('.current-week-number').textContent = weekNumber;
+        if (document.querySelector('[name="group-select"]').value !== "default")
+            await getClasses();
+    });
+    prevButton.addEventListener("click", async () => {
+        nextButton.removeAttribute('disabled');
+        if (weekNumber > 1)
+        {
+            weekNumber--;
+        }
+        if (weekNumber == 1)
+        {
+            prevButton.setAttribute('disabled', '');
+        }
+        document.querySelector('.current-week-number').textContent = weekNumber;
+        if (document.querySelector('[name="group-select"]').value !== "default")
+            await getClasses();
+    });
     select.addEventListener("change", getClasses);
-}
-
-async function incrementWeekNumber()
-{
-    if (weekNumber < 16)
-    {
-        weekNumber++;
-    }
-    document.querySelector('.current-week-number').textContent = weekNumber;
-    if (document.querySelector('[name="group-select"]').value !== "default")
-        await getClasses();
-}
-
-async function decrementWeekNumber()
-{
-    if (weekNumber > 1)
-    {
-        weekNumber--;
-    }
-    document.querySelector('.current-week-number').textContent = weekNumber;
-    if (document.querySelector('[name="group-select"]').value !== "default")
-        await getClasses();
 }
 
 async function getClasses()
@@ -126,7 +134,6 @@ async function getUserGroup(userId)
     let response = await fetch(url);
     if (response.ok && !response.redirected)
     {
-        console.log(response);
         let json = await response.json();
         return json.name;
     }

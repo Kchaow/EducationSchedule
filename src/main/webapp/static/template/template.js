@@ -7,7 +7,37 @@ window.onload = function ()
     attachmentStatus = document.querySelector('.attachment-status');
     let scheduleStrokeContainer = document.querySelectorAll('.schedule-stroke-container');
     let groupSelect = document.querySelector('[name="group-select"]');
+    let weekNumberCount = document.querySelector('[name="weekCount"]').value;
+    let prevButton = document.querySelector('.prev-button');
+    let nextButton = document.querySelector('.next-button');
+    let currentWeekNumber = document.querySelector('.current-week-number');
 
+    prevButton.addEventListener('click', () =>
+    {
+        nextButton.removeAttribute('disabled');
+        if (Number(currentWeekNumber.textContent) > 1)
+        {
+            currentWeekNumber.textContent = Number(currentWeekNumber.textContent) - 1;
+            groupSelect.dispatchEvent(new Event("change"));
+        }
+        if (Number(currentWeekNumber.textContent) == 1)
+        {
+            prevButton.setAttribute('disabled', '');
+        }
+    });
+    nextButton.addEventListener('click', () => 
+    {
+        prevButton.removeAttribute('disabled');
+        if (Number(currentWeekNumber.textContent) < weekNumberCount)
+        {
+            currentWeekNumber.textContent = Number(currentWeekNumber.textContent) + 1;
+            groupSelect.dispatchEvent(new Event("change"));
+        }
+        if (Number(currentWeekNumber.textContent) == weekNumberCount)
+        {
+            nextButton.setAttribute('disabled', '');
+        }
+    });
     groupSelect.addEventListener("change", () =>
     {
         clearDates();
@@ -26,19 +56,18 @@ window.onload = function ()
             setupSchedule(groupSelect);
         }
     });
-    
     scheduleStrokeContainer.forEach( (stroke) =>
     {
         let subjectSelect = stroke.querySelector('.subject-select');
         let teacherSelect = stroke.querySelector('.teacher-select');
         let audienceInput = stroke.querySelector('.audience-input');
-        let weekNumber = document.querySelector('.current-week-number').textContent;
         let dayOfWeek = stroke.getAttribute('data-weekday-index');
         let classNumber = stroke.getAttribute('data-stroke-number');
         let scheduleTemplateId = document.querySelector('.template-id').value;
 
         subjectSelect.addEventListener("change", async () =>
         {
+            let weekNumber = document.querySelector('.current-week-number').textContent;
             let groupId = document.querySelector('[name="group-select"]').value;
             let classId = stroke.getAttribute('data-class-id');
 
@@ -65,6 +94,7 @@ window.onload = function ()
         });
         teacherSelect.addEventListener("change", async () =>
         {
+            let weekNumber = document.querySelector('.current-week-number').textContent;
             let classId = stroke.getAttribute('data-class-id');
             let groupId = document.querySelector('[name="group-select"]').value;
             classId = await saveChanges(classId ,subjectSelect.value, teacherSelect.value, audienceInput.value, groupId, weekNumber, dayOfWeek, classNumber, scheduleTemplateId);
@@ -72,6 +102,7 @@ window.onload = function ()
         });
         audienceInput.addEventListener("change", async () =>
         {
+            let weekNumber = document.querySelector('.current-week-number').textContent;
             let classId = stroke.getAttribute('data-class-id');
             let groupId = document.querySelector('[name="group-select"]').value;
             classId = await saveChanges(classId ,subjectSelect.value, teacherSelect.value, audienceInput.value, groupId, weekNumber, dayOfWeek, classNumber, scheduleTemplateId);

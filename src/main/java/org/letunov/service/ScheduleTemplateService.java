@@ -1,6 +1,7 @@
 package org.letunov.service;
 
 import org.letunov.domainModel.ScheduleTemplate;
+import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 
 import java.util.List;
@@ -12,4 +13,5 @@ public interface ScheduleTemplateService
     void deleteScheduleTemplate(long id);
     ScheduleTemplate getScheduleTemplate(long id);
     void makeTemplateActive(String templateName);
+    ResponseEntity<ScheduleTemplate> getActiveScheduleTemplate();
 }
