@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" th:href="@{/static/groupManage/groupManage.css}">
+    <link rel="stylesheet" th:href="@{/static/style.css}">
+    <!-- <link rel="stylesheet" href="../../static/teachersManage/teachersManage.css">
+    <link rel="stylesheet" href="../../static/style.css"> -->
+    <title>Document</title>
+</head>
+<body>
+    <div class="list-n-form-container">
+        <div class="users-list-container">
+            <a th:each="group : ${groups}" th:href="@{/groups/} + ${group.id}">
+                <div class="group-container">
+                    <p class="group-name" th:text="${group.name}">группа</p>
+                </div>
+            </a>
+        </div>
+        <div class="form-group-container">
+            <form th:object="${newGroup}" method="POST" th:action="@{/groups}">
+                <label for="name">Название: </label>
+                <input type="text" th:field="*{name}"/><br/>
+                <input type="submit" value="Создать"/>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

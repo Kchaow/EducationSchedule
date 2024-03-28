@@ -49,4 +49,9 @@ public class GroupServiceImpl implements GroupService
     {
         return groupDao.findByName(name);
     }
+
+    @Override
+    public Group createNewGroup(Group group) {
+        return groupDao.save(group);
+    }
 }

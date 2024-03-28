@@ -31,6 +31,7 @@ public class SecurityConfig
         http.authorizeHttpRequests((authorize) -> authorize
                         .requestMatchers(new AntPathRequestMatcher("/schedule/templates/**")).hasAuthority("admin")
                         .requestMatchers(new AntPathRequestMatcher("/users/manage/**")).hasAuthority("admin")
+                        .requestMatchers(new AntPathRequestMatcher("/groups/manage")).hasAuthority("admin")
                         .requestMatchers(new AntPathRequestMatcher("/users/*", "DELETE")).hasAuthority("admin")
                         .requestMatchers(new AntPathRequestMatcher("/users/*")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/schedule/**")).permitAll()

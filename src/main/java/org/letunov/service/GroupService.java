@@ -11,4 +11,5 @@ public interface GroupService
     public List<Group> getGroups();
     public ResponseEntity<Group> getStudentGroup(long studentId);
     public Group getGroupByName(String name);
+    Group createNewGroup(Group group);
 }
