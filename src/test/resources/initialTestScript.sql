@@ -48,7 +48,7 @@ CREATE TABLE class
 (
     id SERIAL PRIMARY KEY,
     week_number INTEGER NOT NULL,
-    user_id INTEGER REFERENCES "user" (id),
+    user_id INTEGER REFERENCES "user" (id) ON DELETE SET NULL,
     day_of_week INTEGER NOT NULL,
     class_number INTEGER NOT NULL CHECK(class_number > 0),
     audience INTEGER,

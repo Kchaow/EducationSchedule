@@ -29,9 +29,10 @@ public class SecurityConfig
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception
     {
         http.authorizeHttpRequests((authorize) -> authorize
-                        .requestMatchers(new AntPathRequestMatcher("/admin/**")).hasAuthority("admin")
                         .requestMatchers(new AntPathRequestMatcher("/schedule/templates/**")).hasAuthority("admin")
-                        .requestMatchers(new AntPathRequestMatcher("/user/manage/**")).hasAuthority("admin")
+                        .requestMatchers(new AntPathRequestMatcher("/users/manage/**")).hasAuthority("admin")
+                        .requestMatchers(new AntPathRequestMatcher("/users/*", "DELETE")).hasAuthority("admin")
+                        .requestMatchers(new AntPathRequestMatcher("/users/*")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/schedule/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/static/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/**")).authenticated())

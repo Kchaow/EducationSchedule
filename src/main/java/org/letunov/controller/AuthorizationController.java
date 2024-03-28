@@ -36,7 +36,7 @@ public class AuthorizationController
     public ResponseEntity<UserId> getCurrentUserId()
     {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null)
+        if (authentication != null && authentication.isAuthenticated())
         {
             long id = userDao.findByLogin(((UserDetails) authentication.getPrincipal()).getUsername()).getId();
             UserId userId = new UserId(id);

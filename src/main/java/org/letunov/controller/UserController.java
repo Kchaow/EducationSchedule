@@ -5,15 +5,18 @@ import lombok.Getter;
 import lombok.Setter;
 import org.letunov.domainModel.Group;
 import org.letunov.domainModel.User;
+import org.letunov.exceptions.AccessDeniedException;
 import org.letunov.service.GroupService;
 import org.letunov.service.RoleService;
 import org.letunov.service.UserService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,6 +48,31 @@ public class UserController
             isUserJustCreated = false;
         }
     }
+
+    @GetMapping("/{id}")
+    public String getUserPage(@PathVariable("id") long id, Model model)
+    {
+        boolean isShowDeleteButton = userService.isAllowDeleteUser(id);
+        User user = userService.getById(id);
+        model.addAttribute("isShowDeleteButton", isShowDeleteButton);
+        model.addAttribute("user", user);
+        return "user";
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Object> deleteUser(@PathVariable("id") long id)
+    {
+        if (userService.isAllowDeleteUser(id))
+        {
+            return userService.deleteUser(id);
+        }
+        else
+        {
+            throw new AccessDeniedException();
+        }
+    }
+
+
 
     @GetMapping("/manage")
     public String getUsersManagePage(Model model)

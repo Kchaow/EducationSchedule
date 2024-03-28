@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" th:href="@{/static/user/user.css}">
+    <link rel="stylesheet" th:href="@{/static/style.css}">
+    <script th:src="@{/static/user/user.js}"></script>
+    <title>Document</title>
+</head>
+<body>
+    <h3 th:text="|${user.firstName} ${user.lastName} | + (${user.middleName} ? ${user.middleName} : '')">Фамилия Имя Отчество</h3>
+    <input type="hidden" name="user-id" th:value="${user.id}"/>
+    <input type="button" name="delete-button" th:if="${isShowDeleteButton}" value="Удалить пользователя"/>
+    <p id="delete-status"></p>
+</body>
+</html>
