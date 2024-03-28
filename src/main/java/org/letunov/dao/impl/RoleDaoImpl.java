@@ -49,6 +49,21 @@ public class RoleDaoImpl implements RoleDao
         return null;
     }
 
+    @Override
+    public Role findByName(String name)
+    {
+        final String query = "SELECT id, name FROM role WHERE name = ?";
+        SqlRowSet rowSet = jdbcTemplate.queryForRowSet(query, name);
+        Role role = new Role();
+        if (rowSet.first())
+        {
+            role.setId(rowSet.getInt(1));
+            role.setName(rowSet.getString(2));
+            return role;
+        }
+        return null;
+    }
+
     private static class RoleRowMapper implements RowMapper<Role>
     {
         @Override

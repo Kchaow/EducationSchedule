@@ -31,6 +31,7 @@ public class SecurityConfig
         http.authorizeHttpRequests((authorize) -> authorize
                         .requestMatchers(new AntPathRequestMatcher("/admin/**")).hasAuthority("admin")
                         .requestMatchers(new AntPathRequestMatcher("/schedule/templates/**")).hasAuthority("admin")
+                        .requestMatchers(new AntPathRequestMatcher("/user/manage/**")).hasAuthority("admin")
                         .requestMatchers(new AntPathRequestMatcher("/schedule/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/static/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/**")).authenticated())

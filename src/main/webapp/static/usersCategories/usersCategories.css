@@ -1,0 +1,17 @@
+.user-category-container
+{
+    background-color: #ACACAC;
+    display: flex;
+}
+
+.arrow-container
+{
+    width: 1.3rem;
+    margin-left: 20px;
+}
+
+.user-container
+{
+    width: 20rem;
+    margin: 0px 0px 10px 0px;
+}

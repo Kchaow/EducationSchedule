@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" th:href="@{/static/usersCategories/usersCategories.css}">
+    <link rel="stylesheet" th:href="@{/static/style.css}">
+    <!-- <link rel="stylesheet" href="../../static/usersManage/usersManage.css">
+    <link rel="stylesheet" href="../../static/style.css"> -->
+    <!-- <script src="../../static/templates/usersManage.js"></script> -->
+    <title>Document</title>
+</head>
+<body>
+    <div class="categories-container">
+        <div th:each="category : ${categories}" class="user-container">
+            <a th:href="${category.href}">
+                <div class="user-category-container">
+                    <div class="arrow-container">
+                        <p>&#10095;</p>
+                    </div>
+                    <div class="category-name-container">
+                        <p th:text="${category.name}" class="category-name">Название категории</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+</body>
+</html>

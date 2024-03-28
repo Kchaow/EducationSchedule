@@ -43,4 +43,10 @@ public class GroupServiceImpl implements GroupService
             throw new NoSuchElementException("user %d doesn't have group".formatted(studentId));
         return new ResponseEntity<Group>(group, HttpStatus.OK);
     }
+
+    @Override
+    public Group getGroupByName(String name)
+    {
+        return groupDao.findByName(name);
+    }
 }

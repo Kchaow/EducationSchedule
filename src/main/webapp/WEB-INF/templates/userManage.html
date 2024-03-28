@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" th:href="@{/static/userManage/userManage.css}">
+    <link rel="stylesheet" th:href="@{/static/style.css}">
+    <!-- <link rel="stylesheet" href="../../static/teachersManage/teachersManage.css">
+    <link rel="stylesheet" href="../../static/style.css"> -->
+    <title>Document</title>
+</head>
+<body>
+    <div class="list-n-form-container">
+        <div class="users-list-container">
+            <a href="#" th:each="user : ${users}">
+                <div class="user-container">
+                    <p class="user-name" th:text="|${user.firstName} ${user.lastName} | + (${user.middleName} ? ${user.middleName} : '')">Михаил Валерьевич</p>
+                </div>
+            </a>
+        </div>
+        <div class="form-user-container">
+            <form th:object="${newUser}" method="POST" th:action="@{/users/manage}">
+                <input type="hidden" th:field="*{role.id}" th:value="*{role.id}"/>
+                <input type="hidden" th:field="*{role.name}" th:value="*{role.name}"/>
+                <label for="firstName">Имя: </label>
+                <input type="text" th:field="*{firstName}" /><br/>
+                <label for="lastName">Фамилия: </label>
+                <input type="text" th:field="*{lastName}"/><br/>
+                <label for="middleName">Отчество: </label>
+                <input type="text" th:field="*{middleName}"/><br/>
+                <label for="email">Email: </label>
+                <input type="text" th:field="*{email}"/><br/>
+                <input type="submit" value="Создать"/>
+            </form>
+            <div class="login-n-password-output">
+                <div class="labels-container">
+                    <div class="output">
+                        <p class="output-text">Логин: </p>
+                    </div>
+                    <div class="output">
+                        <p class="output-text">Пароль: </p>
+                    </div>
+                </div>
+                <div class="output-container">
+                    <div class="output">
+                        <p class="output-text" th:text="${generatedLogin}"></p>
+                    </div>
+                    <div class="output">
+                        <p class="output-text" th:text="${generatedPassword}"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

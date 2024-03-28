@@ -34,6 +34,8 @@ import org.thymeleaf.spring6.view.ThymeleafViewResolver;
 //1. Добавить необходимые Converter'ы и Formatter'ы
 //2. Сделать нормальную валидацию через JSR
 //3. Дать полям более подходящие имена
+//4. Пагинацию для потенциально больших списков
+//5. Отправка логина и пароля на почту при создании пользователя
 
 @Configuration
 @EnableWebMvc

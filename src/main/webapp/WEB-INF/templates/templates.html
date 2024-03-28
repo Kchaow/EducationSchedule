@@ -26,7 +26,7 @@
         </a>
         <input name="delete-button" th:data-id="${template.id}" type="button" value="&#10060;"/> 
     </div>
-    <form action="#" th:action="@{/schedule/templates}" th:object="${newTemplate}" method="POST">
+    <form th:action="@{/schedule/templates}" th:object="${newTemplate}" method="POST">
         <legend>Создать новый шаблон</legend>
         <input type="text" th:field="*{name}"/>
         <input type="number" min="1" th:field="*{weekCount}"/><br>
