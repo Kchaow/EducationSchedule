@@ -39,6 +39,12 @@ public class GroupController
         return "groupManage";
     }
 
+    @RequestMapping("/groups/{id}")
+    public ResponseEntity<Object> deleteGroup(@PathVariable("id") long id)
+    {
+        return groupService.deleteGroup(id);
+    }
+
     @PostMapping("/groups")
     public String createNewGroup(Group group)
     {

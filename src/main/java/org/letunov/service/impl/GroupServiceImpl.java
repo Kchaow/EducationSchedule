@@ -54,4 +54,11 @@ public class GroupServiceImpl implements GroupService
     public Group createNewGroup(Group group) {
         return groupDao.save(group);
     }
+
+    @Override
+    public ResponseEntity<Object> deleteGroup(long id)
+    {
+        groupDao.deleteById(id);
+        return ResponseEntity.noContent().build();
+    }
 }

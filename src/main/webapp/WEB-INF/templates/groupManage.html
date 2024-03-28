@@ -5,18 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" th:href="@{/static/groupManage/groupManage.css}">
     <link rel="stylesheet" th:href="@{/static/style.css}">
+    <script th:src="@{/static/groupManage/groupManage.js}"></script>
     <!-- <link rel="stylesheet" href="../../static/teachersManage/teachersManage.css">
     <link rel="stylesheet" href="../../static/style.css"> -->
     <title>Document</title>
 </head>
 <body>
     <div class="list-n-form-container">
-        <div class="users-list-container">
-            <a th:each="group : ${groups}" th:href="@{/groups/} + ${group.id}">
+        <div class="groups-list-container">
+            <!-- <a th:each="group : ${groups}" th:href="@{/groups/} + ${group.id}">
                 <div class="group-container">
                     <p class="group-name" th:text="${group.name}">группа</p>
                 </div>
-            </a>
+            </a> -->
+            <div th:each="group : ${groups}" class="group-flex-container" th:data-id="${group.id}">
+                <a class="group-href" th:href="@{/groups/{group.id}}">
+                    <div th:text="${group.name}" th:data-id="${group.id}" class="group-box">
+                        Группа 1
+                    </div>
+                </a>
+                <input name="delete-button" th:data-id="${group.id}" type="button" value="&#10060;"/> 
+            </div>
         </div>
         <div class="form-group-container">
             <form th:object="${newGroup}" method="POST" th:action="@{/groups}">
@@ -26,5 +35,10 @@
             </form>
         </div>
     </div>
+    <dialog class="confirmation-dialog">
+        <p class="confirmation-text"></p>
+        <input type="button" name="accept-button" value="Подтвердить"/>
+        <input type="button" name="cancel-button" value="Отмена"/>
+    </dialog>
 </body>
 </html>
